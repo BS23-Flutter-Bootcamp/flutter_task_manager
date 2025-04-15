@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_task_manager/routes/app_route.dart';
+import 'package:flutter_task_manager/routes/app_route_name.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,13 +11,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: Text('Flutter task manager'),
-        ),
-      ),
+      initialRoute: RouteNames.splashScreen,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }
