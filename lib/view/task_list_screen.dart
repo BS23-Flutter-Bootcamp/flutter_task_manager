@@ -65,7 +65,7 @@ class TaskListScreen extends StatelessWidget {
         },
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(
-          Icons.add_task_sharp,
+          Icons.add,
           color: Theme.of(context).iconTheme.color,
         ),
       ),

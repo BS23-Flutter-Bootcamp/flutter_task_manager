@@ -25,12 +25,6 @@ class EditTaskScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Center(child: Text('Edit task page')),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go(RouteNames.editTaskSceen);
-        },
-        child: Icon(Icons.edit),
-      ),
     );
   }
 }
