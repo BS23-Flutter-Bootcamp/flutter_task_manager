@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routes/app_route_name.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -10,7 +11,7 @@ class SplashScreen extends StatelessWidget {
     Future.delayed(const Duration(seconds: 2), () {
       if (context.mounted) {
         try {
-          Navigator.pushReplacementNamed(context, RouteNames.taskListScreen);
+          context.go(RouteNames.taskListScreen);
         } catch (e) {
           debugPrint('Navigation error: $e');
         }
