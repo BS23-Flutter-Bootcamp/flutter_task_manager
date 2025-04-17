@@ -10,11 +10,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 2), () {
       if (context.mounted) {
-        try {
           context.go(RouteNames.taskListScreen);
-        } catch (e) {
-          debugPrint('Navigation error: $e');
-        }
       }
     });
 

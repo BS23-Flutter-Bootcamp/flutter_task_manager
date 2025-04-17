@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routes/app_route.dart';
 
-void main() {
+
+Future<void> main() async {
   runApp(const MainApp());
 }
 
