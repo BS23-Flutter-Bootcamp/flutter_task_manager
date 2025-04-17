@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routes/app_route_name.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -15,40 +14,6 @@ class AddTaskScreenState extends State<AddTaskScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _dateController = TextEditingController();
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Colors.deepPurple,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black87,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.deepPurple),
-            ),
-            textTheme: TextTheme(
-              bodyLarge: TextStyle(fontFamily: 'Roboto', fontSize: 16),
-            ),
-            dialogTheme: DialogThemeData(backgroundColor: Colors.white),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      setState(() {
-        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -92,7 +57,8 @@ class AddTaskScreenState extends State<AddTaskScreen> {
                     minWidth: 24,
                     minHeight: 24,
                   ),
-                  hintText: 'Add Sub-task',
+                  hintText: 'Add task',
+                  labelText: 'title',
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.deepPurpleAccent),
                   ),
@@ -107,22 +73,16 @@ class AddTaskScreenState extends State<AddTaskScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: _dateController,
-                readOnly: true, // Prevents manual text input
                 decoration: InputDecoration(
                   labelText: 'Due Date',
                   hintText: 'YYYY-MM-DD',
-                  prefixIcon: Icon(
-                    Icons.calendar_today,
-                    color: Colors.deepPurple,
-                  ),
+                  prefixIcon: Icon(Icons.calendar_today),
                 ),
-                onTap: () => _selectDate(context),
+                onTap: () {},
               ),
-
               const SizedBox(height: 20),
               TextFormField(
                 controller: _descriptionController,
-
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.description),
                   labelText: 'notes',
