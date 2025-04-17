@@ -14,12 +14,12 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       theme: ThemeData(
-        primaryColor: Colors.deepPurple[300],
-        hintColor: Colors.amber,
+        primaryColor: Colors.deepPurple[200],
+        hintColor: Colors.blueGrey,
         scaffoldBackgroundColor: Colors.deepPurple[50],
         textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Colors.deepPurple[600]),
-          bodyMedium: TextStyle(color: Colors.deepPurple[400]),
+          bodyLarge: TextStyle(color: Colors.deepPurple[400]),
+          bodyMedium: TextStyle(color: Colors.deepPurple[200]),
         ),
         appBarTheme: AppBarTheme(color: Colors.deepPurple[400]),
       ),
