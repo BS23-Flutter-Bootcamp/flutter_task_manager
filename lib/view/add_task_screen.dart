@@ -5,7 +5,6 @@ import 'package:flutter_task_manager/viewmodel/add_task_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-/// A screen for adding a new task with title, description, and due date.
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
 
@@ -13,7 +12,7 @@ class AddTaskScreen extends StatefulWidget {
   AddTaskScreenState createState() => AddTaskScreenState();
 }
 
-/// State for AddTaskScreen, managing form inputs and date picker.
+
 class AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
@@ -26,7 +25,6 @@ class AddTaskScreenState extends State<AddTaskScreen> {
     super.dispose();
   }
 
-  /// Shows the date picker and updates the ViewModel with the selected date.
   Future<void> _selectDate(BuildContext context, AddTaskViewModel viewModel) async {
     final DateTime? picked = await showDatePicker(
       context: context,
