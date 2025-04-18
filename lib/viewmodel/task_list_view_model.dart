@@ -1,21 +1,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
-import 'package:flutter_task_manager/model/task.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 
 class TaskListViewModel extends ChangeNotifier {
   final TaskRepository _taskRepository = TaskRepository();
-  List<Task> _tasks = [];
+  List<TaskEntity> _tasks = [];
 
-  List<Task> get tasks => _tasks;
+  List<TaskEntity> get tasks => _tasks;
 
   Future<void> fetchTasks() async {
     _tasks = await _taskRepository.getTasks();
     notifyListeners();
   }
 
-  Future<void> toggleTaskCompletion(Task task) async {
-    final updatedTask = Task(
+  Future<void> toggleTaskCompletion(TaskEntity task) async {
+    final updatedTask = TaskEntity(
       id: task.id,
       title: task.title,
       description: task.description,

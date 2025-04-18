@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
-import 'package:flutter_task_manager/model/task.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 
 
 class AddTaskViewModel extends ChangeNotifier {
@@ -23,7 +23,7 @@ class AddTaskViewModel extends ChangeNotifier {
       return false;
     }
 
-    final task = Task(
+    final task = TaskEntity(
       title: title,
       description: description,
       dueDate: dueDate,

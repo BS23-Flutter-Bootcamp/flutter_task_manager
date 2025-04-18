@@ -1,19 +1,19 @@
-import 'package:flutter_task_manager/model/task.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 
 import '../services/database_service.dart';
 
 class TaskRepository {
   final DatabaseService _databaseService = DatabaseService();
 
-  Future<void> addTask(Task task) async {
+  Future<void> addTask(TaskEntity task) async {
     await _databaseService.insertTask(task);
   }
 
-  Future<List<Task>> getTasks() async {
+  Future<List<TaskEntity>> getTasks() async {
     return await _databaseService.getTasks();
   }
 
-  Future<void> updateTask(Task task) async {
+  Future<void> updateTask(TaskEntity task) async {
     await _databaseService.updateTask(task);
   }
 

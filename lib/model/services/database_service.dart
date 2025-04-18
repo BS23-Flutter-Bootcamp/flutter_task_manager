@@ -1,4 +1,4 @@
-import 'package:flutter_task_manager/model/task.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -58,7 +58,7 @@ class DatabaseService {
     }
   }
 
-  Future<void> insertTask(Task task) async {
+  Future<void> insertTask(TaskEntity task) async {
     try {
       final db = await database;
       await db.insert(_tableName, task.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
@@ -67,17 +67,17 @@ class DatabaseService {
     }
   }
 
-  Future<List<Task>> getTasks() async {
+  Future<List<TaskEntity>> getTasks() async {
     try {
       final db = await database;
       final List<Map<String, dynamic>> maps = await db.query(_tableName);
-      return List.generate(maps.length, (i) => Task.fromMap(maps[i]));
+      return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> updateTask(Task task) async {
+  Future<void> updateTask(TaskEntity task) async {
     try {
       final db = await database;
       await db.update(
