@@ -1,4 +1,4 @@
-import 'package:flutter_task_manager/routes/app_route_name.dart';
+import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/add_task_screen.dart';
 import 'package:flutter_task_manager/view/edit_task_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +24,7 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const AddTaskScreen(),
     ),
      GoRoute(
-      path: RouteNames.editTaskSceen,
+      path: RouteNames.editTaskScreen,
       name: 'edit',
       builder: (context, state) => const EditTaskScreen(),
     ),

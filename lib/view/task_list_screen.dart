@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/viewmodel/task_list_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../routes/app_route_name.dart';
+import '../routing/app_route_name.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskListScreen extends StatelessWidget {
@@ -50,10 +50,7 @@ class TaskListScreen extends StatelessWidget {
                           horizontal: 16,
                         ),
                         onTap: () {
-                          context.go(
-                            RouteNames.editTaskSceen,
-                            extra: task, // Pass task to edit screen
-                          );
+                          context.go(RouteNames.editTaskScreen, extra: task);
                         },
                         leading: Checkbox(
                           value: task.isCompleted,
