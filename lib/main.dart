@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_task_manager/constants/app_constants.dart';
 import 'package:flutter_task_manager/routes/app_route.dart';
 
 
@@ -15,14 +16,14 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       theme: ThemeData(
-        primaryColor: Colors.deepPurple[200],
-        hintColor: Colors.blueGrey,
-        scaffoldBackgroundColor: Colors.deepPurple[50],
+        primaryColor: AppConstants.primaryColor,
+        hintColor: AppConstants.hintColor,
+        scaffoldBackgroundColor: AppConstants.scaffoldBackgroundColor,
         textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Colors.deepPurple[400]),
-          bodyMedium: TextStyle(color: Colors.deepPurple[200]),
+          bodyLarge: TextStyle(color: AppConstants.textColorDark),
+          bodyMedium: TextStyle(color: AppConstants.textColorLight),
         ),
-        appBarTheme: AppBarTheme(color: Colors.deepPurple[400]),
+        appBarTheme: AppBarTheme(color: AppConstants.textColorDark),
       ),
     );
   }

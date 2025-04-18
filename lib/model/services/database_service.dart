@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
 
 class DatabaseService {
   static Database? _database;
@@ -54,6 +54,9 @@ class DatabaseService {
         },
       );
     } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
       rethrow;
     }
   }
@@ -61,8 +64,15 @@ class DatabaseService {
   Future<void> insertTask(TaskEntity task) async {
     try {
       final db = await database;
-      await db.insert(_tableName, task.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+      await db.insert(
+        _tableName,
+        task.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
       rethrow;
     }
   }
@@ -73,6 +83,9 @@ class DatabaseService {
       final List<Map<String, dynamic>> maps = await db.query(_tableName);
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
       rethrow;
     }
   }
@@ -87,6 +100,9 @@ class DatabaseService {
         whereArgs: [task.id],
       );
     } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
       rethrow;
     }
   }
@@ -94,12 +110,11 @@ class DatabaseService {
   Future<void> deleteTask(int id) async {
     try {
       final db = await database;
-      await db.delete(
-        _tableName,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
     } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
       rethrow;
     }
   }
@@ -110,6 +125,9 @@ class DatabaseService {
       await db.close();
       _database = null;
     } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
       rethrow;
     }
   }

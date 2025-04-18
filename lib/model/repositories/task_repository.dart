@@ -3,7 +3,10 @@ import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import '../services/database_service.dart';
 
 class TaskRepository {
-  final DatabaseService _databaseService = DatabaseService();
+  TaskRepository({DatabaseService? databaseService})
+    : _databaseService = databaseService ?? DatabaseService();
+
+  final DatabaseService _databaseService;
 
   Future<void> addTask(TaskEntity task) async {
     await _databaseService.insertTask(task);
