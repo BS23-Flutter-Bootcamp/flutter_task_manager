@@ -12,7 +12,6 @@ class AddTaskScreen extends StatefulWidget {
   AddTaskScreenState createState() => AddTaskScreenState();
 }
 
-
 class AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
@@ -23,18 +22,6 @@ class AddTaskScreenState extends State<AddTaskScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context, AddTaskViewModel viewModel) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: viewModel.selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      viewModel.setSelectedDate(picked);
-    }
   }
 
   @override
@@ -69,7 +56,17 @@ class AddTaskScreenState extends State<AddTaskScreen> {
                       descriptionController: _descriptionController,
                       selectedDate: viewModel.selectedDate,
                       errorMessage: viewModel.errorMessage,
-                      onDateTap: () => _selectDate(context, viewModel),
+                      onDateTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: viewModel.selectedDate ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101),
+                        );
+                        if (picked != null) {
+                          viewModel.setSelectedDate(picked);
+                        }
+                      },
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -77,33 +74,37 @@ class AddTaskScreenState extends State<AddTaskScreen> {
                         minimumSize: const Size(double.infinity, 48),
                         backgroundColor: Theme.of(context).primaryColor,
                       ),
-                      onPressed: viewModel.isLoading
-                          ? null
-                          : () async {
-                              if (_formKey.currentState!.validate()) {
-                                final success = await viewModel.addTask(
-                                  _titleController.text,
-                                  _descriptionController.text.isEmpty
-                                      ? null
-                                      : _descriptionController.text,
-                                  viewModel.selectedDate,
-                                );
-                                if (success && context.mounted) {
-                                  _titleController.clear();
-                                  _descriptionController.clear();
-                                  context.go(RouteNames.taskListScreen);
+                      onPressed:
+                          viewModel.isLoading
+                              ? null
+                              : () async {
+                                if (_formKey.currentState!.validate()) {
+                                  final success = await viewModel.addTask(
+                                    _titleController.text,
+                                    _descriptionController.text.isEmpty
+                                        ? null
+                                        : _descriptionController.text,
+                                    viewModel.selectedDate,
+                                  );
+                                  if (success && context.mounted) {
+                                    _titleController.clear();
+                                    _descriptionController.clear();
+                                    context.go(RouteNames.taskListScreen);
+                                  }
                                 }
-                              }
-                            },
-                      child: viewModel.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              'Add Task',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Theme.of(context).iconTheme.color,
+                              },
+                      child:
+                          viewModel.isLoading
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                              : Text(
+                                'Add Task',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Theme.of(context).iconTheme.color,
+                                ),
                               ),
-                            ),
                     ),
                   ],
                 );
