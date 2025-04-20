@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
-import 'package:flutter_task_manager/model/task.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
   final TaskRepository _taskRepository = TaskRepository();
   String? _errorMessage;
   DateTime? _selectedDate;
-  Task? _task;
+  TaskEntity? _task;
 
   String? get errorMessage => _errorMessage;
   DateTime? get selectedDate => _selectedDate;
-  Task? get task => _task;
+  TaskEntity? get task => _task;
 
   // Initialize with the task to be edited without notifying listeners
-  void init(Task task) {
+  void init(TaskEntity task) {
     _task = task;
     _selectedDate = task.dueDate;
     _errorMessage = null;
@@ -40,7 +40,7 @@ class EditTaskViewModel extends ChangeNotifier {
       return false;
     }
 
-    final updatedTask = Task(
+    final updatedTask = TaskEntity(
       id: _task!.id,
       title: title,
       description: description,

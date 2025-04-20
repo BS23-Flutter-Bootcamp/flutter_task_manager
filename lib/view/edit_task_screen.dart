@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/model/task.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/viewmodel/edit_task_view_model.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +46,7 @@ class EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final task = GoRouterState.of(context).extra as Task?;
+    final task = GoRouterState.of(context).extra as TaskEntity?;
 
     return ChangeNotifierProvider(
       create: (_) => EditTaskViewModel(),
