@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-    // Theme colors
+  // Theme colors
   static const Color primaryColor = Color(0xFFB39DDB); // DeepPurple[200]
   static const Color hintColor = Color(0xFF78909C); // BlueGrey
   static const Color scaffoldBackgroundColor = Color(0xFFEDE7F6); // DeepPurple[50]
@@ -21,6 +21,7 @@ class AppConstants {
 
   // Error messages
   static const String errorTitleRequired = 'Please enter a title';
+  static const String errorDateRequired = 'Please enter a due date';
   static const String errorTaskNotFound = 'No task to update or delete';
   static const String errorTaskAdd = 'Failed to add task. Please try again.';
   static const String errorTaskUpdate = 'Failed to update task. Please try again.';

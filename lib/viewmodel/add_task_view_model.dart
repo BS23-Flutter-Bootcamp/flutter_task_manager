@@ -30,13 +30,7 @@ class AddTaskViewModel extends ChangeNotifier {
 
   /// Adds a new task to the repository.
   /// Returns true if successful, false otherwise.
-  Future<bool> addTask(String title, String? description, DateTime? dueDate) async {
-    if (title.isEmpty) {
-      _errorMessage = AppConstants.errorTitleRequired;
-      notifyListeners();
-      return false;
-    }
-
+  Future<bool> addTask({required String title, String? description,required DateTime? dueDate}) async {
     final task = TaskEntity(
       title: title,
       description: description,

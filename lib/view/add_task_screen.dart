@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routes/app_route_name.dart';
+import 'package:flutter_task_manager/view/widgets/date_picker_helper.dart';
 import 'package:flutter_task_manager/view/widgets/task_form.dart';
 import 'package:flutter_task_manager/viewmodel/add_task_view_model.dart';
 import 'package:go_router/go_router.dart';
@@ -57,15 +58,13 @@ class AddTaskScreenState extends State<AddTaskScreen> {
                       selectedDate: viewModel.selectedDate,
                       errorMessage: viewModel.errorMessage,
                       onDateTap: () async {
-                        final DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: viewModel.selectedDate ?? DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2101),
-                        );
-                        if (picked != null) {
-                          viewModel.setSelectedDate(picked);
-                        }
+                        final picked =
+                            await DatePickerHelper.showDatePickerDialog(
+                              context: context,
+                              initialDate:
+                                  viewModel.selectedDate,
+                            );
+                        if (picked != null) viewModel.setSelectedDate(picked);
                       },
                     ),
                     const SizedBox(height: 16),
@@ -80,11 +79,12 @@ class AddTaskScreenState extends State<AddTaskScreen> {
                               : () async {
                                 if (_formKey.currentState!.validate()) {
                                   final success = await viewModel.addTask(
-                                    _titleController.text,
-                                    _descriptionController.text.isEmpty
-                                        ? null
-                                        : _descriptionController.text,
-                                    viewModel.selectedDate,
+                                    title: _titleController.text,
+                                    description:
+                                        _descriptionController.text.isEmpty
+                                            ? null
+                                            : _descriptionController.text,
+                                    dueDate: viewModel.selectedDate,
                                   );
                                   if (success && context.mounted) {
                                     _titleController.clear();
@@ -96,7 +96,7 @@ class AddTaskScreenState extends State<AddTaskScreen> {
                       child:
                           viewModel.isLoading
                               ? const CircularProgressIndicator(
-                                color: Colors.white,
+                                color: Colors.deepPurple,
                               )
                               : Text(
                                 'Add Task',
