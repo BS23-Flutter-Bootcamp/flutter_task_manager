@@ -39,7 +39,7 @@ class TaskListScreen extends StatelessWidget {
                         task: task,
                         onTap: () {
                           context.go(
-                            RouteNames.editTaskScreen,
+                            RouteNames.detailsPageScreen,
                             extra: task,
                           );
                         },

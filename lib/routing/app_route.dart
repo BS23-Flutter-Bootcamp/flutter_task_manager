@@ -1,5 +1,6 @@
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/add_task_screen.dart';
+import 'package:flutter_task_manager/view/details_page_screen.dart';
 import 'package:flutter_task_manager/view/edit_task_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_task_manager/view/task_list_screen.dart';
@@ -27,6 +28,11 @@ final GoRouter router = GoRouter(
       path: RouteNames.editTaskScreen,
       name: 'edit',
       builder: (context, state) => const EditTaskScreen(),
+    ),
+     GoRoute(
+      path: RouteNames.detailsPageScreen,
+      name: 'details',
+      builder: (context, state) => const DetailsPageScreen(),
     ),
   ],
 );
