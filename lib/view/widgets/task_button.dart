@@ -2,16 +2,16 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
 class TaskButton extends StatelessWidget {
-  final String text;
-  final IconData? icon;
-  final VoidCallback onTap;
-
   const TaskButton({
     super.key,
     required this.text,
     this.icon,
     required this.onTap,
   });
+  
+  final String text;
+  final IconData? icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {

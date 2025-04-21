@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class DetailCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
   const DetailCard({
     super.key,
     required this.title,
     required this.value,
     required this.icon,
   });
+  
+  final String title;
+  final String value;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {

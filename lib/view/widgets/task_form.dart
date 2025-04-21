@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 
 /// A reusable form widget for task title, description, and due date inputs.
 class TaskForm extends StatelessWidget {
-  final TextEditingController titleController;
-  final TextEditingController descriptionController;
-  final DateTime? selectedDate;
-  final String? errorMessage;
-  final VoidCallback onDateTap;
-
   const TaskForm({
     super.key,
     required this.titleController,
@@ -16,6 +10,12 @@ class TaskForm extends StatelessWidget {
     this.errorMessage,
     required this.onDateTap,
   });
+
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final DateTime? selectedDate;
+  final String? errorMessage;
+  final VoidCallback onDateTap;
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +52,12 @@ class TaskForm extends StatelessWidget {
           readOnly: true,
           decoration: InputDecoration(
             labelText: 'Due Date',
-            hintText:
-                selectedDate == null
-                    ? 'YYYY-MM-DD'
-                    : '${selectedDate!.toLocal()}'.split(' ')[0],
             prefixIcon: const Icon(Icons.calendar_today),
+          ),
+          controller: TextEditingController(
+            text:
+                selectedDate?.toLocal().toString().split(' ')[0] ??
+                'YYYY-MM-DD',
           ),
           onTap: onDateTap,
           validator: (value) {

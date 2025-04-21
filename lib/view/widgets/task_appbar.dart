@@ -4,10 +4,10 @@ import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskAppBar extends StatelessWidget {
+  const TaskAppBar({super.key, required this.text, this.icon});
+
   final String text;
   final IconData? icon;
-
-  const TaskAppBar({super.key, required this.text, this.icon});
 
   @override
   Widget build(BuildContext context) {

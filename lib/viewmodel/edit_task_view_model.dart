@@ -3,31 +3,35 @@ import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
+  EditTaskViewModel(TaskEntity task) : _task = task, _errorMessage = null;
+
   final TaskRepository _taskRepository = TaskRepository();
-  String? _errorMessage;
-  DateTime? _selectedDate;
   TaskEntity? _task;
+  String? _errorMessage;
 
   String? get errorMessage => _errorMessage;
-  DateTime? get selectedDate => _selectedDate;
   TaskEntity? get task => _task;
-
-  // Initialize with the task to be edited without notifying listeners
-  void init(TaskEntity task) {
-    _task = task;
-    _selectedDate = task.dueDate;
-    _errorMessage = null;
-    // Remove notifyListeners() to avoid rebuild during build phase
-  }
 
   // Update the selected date
   void setSelectedDate(DateTime? date) {
-    _selectedDate = date;
-    notifyListeners();
+    if (_task != null) {
+      _task = TaskEntity(
+        id: _task!.id,
+        title: _task!.title,
+        description: _task!.description,
+        dueDate: date,
+        isCompleted: _task!.isCompleted,
+      );
+      notifyListeners();
+    }
   }
 
   // Update the task
-  Future<bool> updateTask(String title, String? description, DateTime? dueDate) async {
+  Future<bool> updateTask({
+    required String title,
+    String? description,
+    required DateTime? dueDate,
+  }) async {
     if (title.isEmpty) {
       _errorMessage = 'Title is required';
       notifyListeners();
@@ -41,7 +45,7 @@ class EditTaskViewModel extends ChangeNotifier {
     }
 
     final updatedTask = TaskEntity(
-      id: _task!.id,
+      id: _task?.id,
       title: title,
       description: description,
       dueDate: dueDate,
@@ -50,6 +54,7 @@ class EditTaskViewModel extends ChangeNotifier {
 
     try {
       await _taskRepository.updateTask(updatedTask);
+      _task = updatedTask;
       _errorMessage = null;
       notifyListeners();
       return true;
@@ -62,7 +67,7 @@ class EditTaskViewModel extends ChangeNotifier {
 
   // Delete the task
   Future<bool> deleteTask() async {
-    if (_task == null || _task!.id == null) {
+    if (_task == null || _task?.id == null) {
       _errorMessage = 'No task to delete';
       notifyListeners();
       return false;

@@ -1,19 +1,20 @@
 import 'package:flutter_task_manager/constants/app_constants.dart';
 
 class TaskEntity {
+  TaskEntity({
+    this.id,
+    required this.title,
+    this.description,
+    required this.dueDate,
+    this.isCompleted = false,
+  });
+
+  
   final int? id;
   final String title;
   final String? description;
   final DateTime? dueDate;
   final bool isCompleted;
-
-  TaskEntity({
-    this.id,
-    required this.title,
-    this.description,
-    this.dueDate,
-    this.isCompleted = false,
-  });
 
   Map<String, dynamic> toMap() {
     return {

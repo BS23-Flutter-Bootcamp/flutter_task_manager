@@ -4,16 +4,16 @@ import 'package:intl/intl.dart';
 
 /// A reusable widget for displaying a task in the task list.
 class TaskListItem extends StatelessWidget {
-  final TaskEntity task;
-  final VoidCallback onTap;
-  final ValueChanged<bool?> onCheckboxChanged;
-
   const TaskListItem({
     super.key,
     required this.task,
     required this.onTap,
     required this.onCheckboxChanged,
   });
+
+  final TaskEntity task;
+  final VoidCallback onTap;
+  final ValueChanged<bool?> onCheckboxChanged;
 
   @override
   Widget build(BuildContext context) {

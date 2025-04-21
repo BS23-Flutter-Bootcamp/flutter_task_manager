@@ -10,12 +10,12 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 2), () {
       if (context.mounted) {
-          context.go(RouteNames.taskListScreen);
+        context.go(RouteNames.taskListScreen);
       }
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFFEDE7F6),
       body: Center(
         child: AnimatedOpacity(
           opacity: 1.0,
@@ -27,9 +27,11 @@ class SplashScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
+                    colors: [
+                      Color(0xFFEDE7F6),
+                      Color(0xFFD1C4E9),
+                    ], // Light purple colors
                     begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
@@ -53,7 +55,7 @@ class SplashScreen extends StatelessWidget {
                 'Flutter Task Manager',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A1A2E),
+                  color: Colors.brown.shade700,
                   letterSpacing: 1.2,
                 ),
               ),
