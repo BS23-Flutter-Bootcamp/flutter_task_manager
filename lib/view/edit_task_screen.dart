@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
+import 'package:flutter_task_manager/view/widgets/date_picker_helper.dart';
 import 'package:flutter_task_manager/viewmodel/edit_task_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -30,18 +31,6 @@ class EditTaskScreenState extends State<EditTaskScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context, EditTaskViewModel viewModel) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: viewModel.selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      viewModel.setSelectedDate(picked);
-    }
   }
 
   @override
@@ -115,7 +104,7 @@ class EditTaskScreenState extends State<EditTaskScreen> {
                             : '${viewModel.selectedDate!.toLocal()}'.split(' ')[0],
                         prefixIcon: const Icon(Icons.calendar_today),
                       ),
-                      onTap: () => _selectDate(context, viewModel),
+                      onTap: () => DatePickerHelper.showDatePickerDialog(context: context, initialDate: viewModel.selectedDate),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
