@@ -15,119 +15,111 @@ class EditTaskScreen extends StatefulWidget {
 
 class EditTaskScreenState extends State<EditTaskScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _titleController;
-  late TextEditingController _descriptionController;
-  bool _isInitialized = false; 
+  late final TextEditingController _titleController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _dueDateController;
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController();
     _descriptionController = TextEditingController();
+    _dueDateController = TextEditingController();
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _dueDateController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final task = GoRouterState.of(context).extra as TaskEntity?;
+    final task = GoRouterState.of(context).extra as TaskEntity;
 
     return ChangeNotifierProvider(
-      create: (_) => EditTaskViewModel(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Edit Task'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.go(RouteNames.taskListScreen);
-              }
-            },
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-          child: Form(
-            key: _formKey,
-            child: Builder(
-              builder: (BuildContext providerContext) {
-                return ListenableBuilder(
-                  listenable: Provider.of<EditTaskViewModel>(providerContext, listen: false),
-                  builder: (context, child) {
-                    final viewModel = Provider.of<EditTaskViewModel>(providerContext);
+      create: (_) => EditTaskViewModel()..init(task),
+      child: Builder(
+        builder: (context) {
+          final viewModel = Provider.of<EditTaskViewModel>(
+            context,
+            listen: false,
+          );
 
-                    // Initialize controllers and view model with task data
-                    if (!_isInitialized && task != null) {
-                      _titleController.text = task.title;
-                      _descriptionController.text = task.description ?? '';
-                      viewModel.init(task);
-                      _isInitialized = true;
-                    }
+          // Initialize controllers once
+          if (_titleController.text.isEmpty) {
+            _titleController.text = task.title;
+            _descriptionController.text = task.description ?? '';
+            _dueDateController.text =
+                task.dueDate?.toLocal().toString().split(' ')[0] ??
+                'YYYY-MM-DD';
+          }
 
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Edit Task'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go(RouteNames.taskListScreen),
+              ),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: ListenableBuilder(
+                  listenable: viewModel,
+                  builder: (context, _) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextFormField(
                           controller: _titleController,
                           decoration: InputDecoration(
-                            prefixIcon: const Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Icon(Icons.edit, size: 24),
-                            ),
-                            prefixIconConstraints: const BoxConstraints(
-                              minWidth: 24,
-                              minHeight: 24,
-                            ),
-                            hintText: 'Edit task title',
                             labelText: 'Title',
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                            ),
+                            prefixIcon: const Icon(Icons.edit),
                             errorText: viewModel.errorMessage,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a title';
+                          validator:
+                              (value) =>
+                                  value?.isEmpty ?? true
+                                      ? 'Please enter a title'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _dueDateController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Due Date',
+                            prefixIcon: Icon(Icons.calendar_today),
+                          ),
+                          onTap: () async {
+                            final pickedDate =
+                                await DatePickerHelper.showDatePickerDialog(
+                                  context: context,
+                                  initialDate:
+                                      viewModel.selectedDate ?? DateTime.now(),
+                                );
+                            if (pickedDate != null) {
+                              viewModel.setSelectedDate(pickedDate);
+                              _dueDateController.text =
+                                  pickedDate.toLocal().toString().split(' ')[0];
                             }
-                            return null;
                           },
                         ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            labelText: 'Due Date',
-                            hintText: viewModel.selectedDate == null
-                                ? 'YYYY-MM-DD'
-                                : '${viewModel.selectedDate!.toLocal()}'.split(' ')[0],
-                            prefixIcon: const Icon(Icons.calendar_today),
-                          ),
-                          onTap: () => DatePickerHelper.showDatePickerDialog(
-                              context: context, initialDate: viewModel.selectedDate),
-                        ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         TextFormField(
                           controller: _descriptionController,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.description),
                             labelText: 'Notes',
-                            hintText: 'Edit description',
+                            prefixIcon: Icon(Icons.description),
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 48),
-                            backgroundColor: Theme.of(context).primaryColor,
-                          ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               final success = await viewModel.updateTask(
@@ -142,42 +134,26 @@ class EditTaskScreenState extends State<EditTaskScreen> {
                               }
                             }
                           },
-                          child: Text(
-                            'Update Task',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
-                          ),
+                          child: const Text('Update Task'),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 48),
-                            side: BorderSide(color: Theme.of(context).colorScheme.error),
-                          ),
                           onPressed: () async {
                             final success = await viewModel.deleteTask();
                             if (success && context.mounted) {
                               context.go(RouteNames.taskListScreen);
                             }
                           },
-                          child: Text(
-                            'Delete Task',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
+                          child: const Text('Delete Task'),
                         ),
                       ],
                     );
                   },
-                );
-              },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
