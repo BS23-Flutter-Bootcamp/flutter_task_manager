@@ -50,6 +50,8 @@ class TaskListItem extends StatelessWidget {
                         : Theme.of(context).textTheme.titleMedium?.color,
                 fontWeight: FontWeight.w500,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
