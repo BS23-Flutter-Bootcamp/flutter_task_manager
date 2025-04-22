@@ -1,18 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpService {
+class LoginService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> login(String email, String password) async {
     try {
-      await _auth.createUserWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
     } catch (e) {
-      throw Exception('Failed to sign up: $e');
+      throw Exception('Failed to log in: $e');
     }
   }
 }

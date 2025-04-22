@@ -112,7 +112,7 @@ class SignUpScreenView extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Sign up with social',
+                          'Sign up with social account',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.grey,
                           ),
@@ -222,11 +222,25 @@ class SignUpScreenView extends StatelessWidget {
                                   : () => providerContext.go(
                                     RouteNames.loginScreen,
                                   ),
-                          child: Text(
-                            'Already have an account?',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Already have an account? ',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'Login',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
