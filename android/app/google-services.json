@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "899001629717",
+    "project_id": "flutter-task-manager-sahim",
+    "storage_bucket": "flutter-task-manager-sahim.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899001629717:android:61535859e80753560b621c",
+        "android_client_info": {
+          "package_name": "com.example.flutter_task_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "899001629717-dkb7fq8abh7iihdrademv0agm10cg8m7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv8xZNo6W2m2pk8dmcm8BiE2bQy-XPUQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "899001629717-dkb7fq8abh7iihdrademv0agm10cg8m7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "899001629717-lm0gctkb2v5q7r9tcrc6k5sce6vhj7cq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterTaskManager"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
