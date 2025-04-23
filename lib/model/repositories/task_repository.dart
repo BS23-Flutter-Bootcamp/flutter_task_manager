@@ -1,26 +1,125 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
-
-import '../services/database_service.dart';
-
+import 'package:flutter_task_manager/model/services/database_service.dart';
+import 'package:flutter_task_manager/model/services/firestore_service.dart';
 class TaskRepository {
-  TaskRepository({DatabaseService? databaseService})
-    : _databaseService = databaseService ?? DatabaseService();
+  TaskRepository({
+    DatabaseService? databaseService,
+    FirestoreService? firestoreService,
+  })  : _databaseService = databaseService ?? DatabaseService(),
+        _firestoreService = firestoreService ?? FirestoreService();
 
   final DatabaseService _databaseService;
+  final FirestoreService _firestoreService;
+
+  String? get _currentUserEmail => FirebaseAuth.instance.currentUser?.email;
 
   Future<void> addTask(TaskEntity task) async {
-    await _databaseService.insertTask(task);
+    try {
+      if (_currentUserEmail == null) throw Exception('User not authenticated');
+      final updatedTask = TaskEntity(
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        isCompleted: task.isCompleted,
+        lastSyncTime: DateTime.now(),
+        email: _currentUserEmail!,
+      );
+      await _databaseService.insertTask(updatedTask);
+      await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
+    } catch (e) {
+      if (kDebugMode) print('Add Task Error: $e');
+      rethrow;
+    }
   }
 
   Future<List<TaskEntity>> getTasks() async {
-    return await _databaseService.getTasks();
+    try {
+      if (_currentUserEmail == null) throw Exception('User not authenticated');
+      return await _databaseService.getTasksByEmail(_currentUserEmail!);
+    } catch (e) {
+      if (kDebugMode) print('Get Tasks Error: $e');
+      rethrow;
+    }
   }
 
   Future<void> updateTask(TaskEntity task) async {
-    await _databaseService.updateTask(task);
+    try {
+      if (_currentUserEmail == null) throw Exception('User not authenticated');
+      final updatedTask = TaskEntity(
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        isCompleted: task.isCompleted,
+        lastSyncTime: DateTime.now(),
+        email: _currentUserEmail!,
+      );
+      await _databaseService.updateTask(updatedTask);
+      await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
+    } catch (e) {
+      if (kDebugMode) print('Update Task Error: $e');
+      rethrow;
+    }
   }
 
   Future<void> deleteTask(int id) async {
-    await _databaseService.deleteTask(id);
+    try {
+      if (_currentUserEmail == null) throw Exception('User not authenticated');
+      await _databaseService.deleteTask(id);
+      await _firestoreService.deleteTask(id, _currentUserEmail!);
+    } catch (e) {
+      if (kDebugMode) print('Delete Task Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> syncTasks() async {
+    try {
+      if (_currentUserEmail == null) throw Exception('User not authenticated');
+
+      // Get local and remote tasks
+      final localTasks = await _databaseService.getTasksByEmail(_currentUserEmail!);
+      final remoteTasks = await _firestoreService.getTasks(_currentUserEmail!);
+
+      // Sync local to remote
+      for (final localTask in localTasks) {
+        final remoteTask = remoteTasks.firstWhere(
+          (rt) => rt.id == localTask.id,
+          orElse: () => TaskEntity(
+            id: localTask.id,
+            title: '',
+            dueDate: null,
+            email: _currentUserEmail!,
+          ),
+        );
+        if (remoteTask.lastSyncTime == null ||
+            localTask.lastSyncTime!.isAfter(remoteTask.lastSyncTime ?? DateTime(1970))) {
+          await _firestoreService.upsertTask(localTask, _currentUserEmail!);
+        }
+      }
+
+      // Sync remote to local
+      for (final remoteTask in remoteTasks) {
+        final localTask = localTasks.firstWhere(
+          (lt) => lt.id == remoteTask.id,
+          orElse: () => TaskEntity(
+            id: remoteTask.id,
+            title: '',
+            dueDate: null,
+            email: _currentUserEmail!,
+          ),
+        );
+        if (localTask.lastSyncTime == null ||
+            remoteTask.lastSyncTime!.isAfter(localTask.lastSyncTime ?? DateTime(1970))) {
+          await _databaseService.insertTask(remoteTask);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) print('Sync Tasks Error: $e');
+      rethrow;
+    }
   }
 }

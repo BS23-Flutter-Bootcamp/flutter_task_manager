@@ -21,6 +21,57 @@ class TaskListScreen extends StatelessWidget {
               color: Theme.of(context).appBarTheme.foregroundColor,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.sync),
+              onPressed: () async {
+                final viewModel = Provider.of<TaskListViewModel>(
+                  context,
+                  listen: false,
+                );
+                try {
+                  await viewModel.fetchTasks();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Tasks synced successfully!'),
+                        backgroundColor:
+                            Colors.green, // Adjust color based on SnackbarType
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ), // Rounded corners
+                        ),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Sync failed: $e',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ), // Ensures contrast
+                        ),
+                        backgroundColor: Colors.red, // Error indication
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            12,
+                          ), // Rounded corners
+                        ),
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
         ),
         body: Builder(
           builder: (BuildContext providerContext) {

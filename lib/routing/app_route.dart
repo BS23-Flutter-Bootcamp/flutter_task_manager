@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/add_task_screen.dart';
 import 'package:flutter_task_manager/view/details_page_screen.dart';
@@ -13,38 +14,38 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: RouteNames.splashScreen,
-      name: 'splash',
       builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
       path: RouteNames.taskListScreen,
-      name: 'tasks',
       builder: (context, state) => const TaskListScreen(),
+      redirect: (context, state) {
+        if (FirebaseAuth.instance.currentUser == null) {
+          return RouteNames.loginScreen;
+        }
+        return null;
+      },
     ),
     GoRoute(
       path: RouteNames.addTaskScreen,
-      name: 'add',
       builder: (context, state) => const AddTaskScreen(),
     ),
     GoRoute(
       path: RouteNames.editTaskScreen,
-      name: 'edit',
       builder: (context, state) => const EditTaskScreen(),
     ),
     GoRoute(
       path: RouteNames.detailsPageScreen,
-      name: 'details',
       builder: (context, state) => const DetailsPageScreen(),
     ),
     GoRoute(
       path: RouteNames.signUpScreen,
-      name: 'signup',
       builder: (context, state) => SignUpScreenView(), // Added Sign Up route
     ),
     GoRoute(
       path: RouteNames.loginScreen,
-      name: 'login',
       builder: (context, state) => LoginScreenView(), // Added Sign Up route
     ),
+    
   ],
 );

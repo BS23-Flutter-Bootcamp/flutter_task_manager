@@ -27,7 +27,7 @@ class DatabaseService {
       );
       return await openDatabase(
         path,
-        version: AppConstants.version,
+        version: AppConstants.version + 1, // Increment version for migration
         onCreate: (db, version) async {
           await db.execute('''
             CREATE TABLE ${AppConstants.tableName} (
@@ -35,22 +35,17 @@ class DatabaseService {
               title TEXT NOT NULL,
               description TEXT,
               dueDate TEXT,
-              isCompleted INTEGER NOT NULL
+              isCompleted INTEGER NOT NULL,
+              lastSyncTime TEXT,
+              email TEXT NOT NULL
             )
           ''');
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableName}');
-            await db.execute('''
-              CREATE TABLE ${AppConstants.tableName} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                description TEXT,
-                dueDate TEXT,
-                isCompleted INTEGER NOT NULL
-              )
-            ''');
+            // Add lastSyncTime and email columns
+            await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN lastSyncTime TEXT');
+            await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN email TEXT NOT NULL DEFAULT ""');
           }
         },
       );
@@ -83,6 +78,23 @@ class DatabaseService {
       final db = await database;
       final List<Map<String, dynamic>> maps = await db.query(
         AppConstants.tableName,
+      );
+      return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
+    } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<TaskEntity>> getTasksByEmail(String email) async {
+    try {
+      final db = await database;
+      final List<Map<String, dynamic>> maps = await db.query(
+        AppConstants.tableName,
+        where: 'email = ?',
+        whereArgs: [email],
       );
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {

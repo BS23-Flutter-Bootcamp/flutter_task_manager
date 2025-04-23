@@ -1,85 +1,89 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
-  EditTaskViewModel(TaskEntity task) : _task = task, _errorMessage = null;
-
-  final TaskRepository _taskRepository = TaskRepository();
-  TaskEntity? _task;
+  final TaskRepository _repository;
+  String _title = '';
+  String? _description;
+  DateTime? _dueDate;
   String? _errorMessage;
+  TaskEntity? _task;
+  bool _isLoading = false;
+
+  EditTaskViewModel({TaskRepository? repository, TaskEntity? task})
+      : _repository = repository ?? TaskRepository(),
+        _task = task {
+    if (task != null) {
+      _title = task.title;
+      _description = task.description;
+      _dueDate = task.dueDate;
+    }
+  }
 
   String? get errorMessage => _errorMessage;
   TaskEntity? get task => _task;
+  String get title => _title;
+  String? get description => _description;
+  DateTime? get dueDate => _dueDate;
+  bool get isLoading => _isLoading;
 
-  // Update the selected date
-  void setSelectedDate(DateTime? date) {
-    if (_task != null) {
-      _task = TaskEntity(
+  void setTitle(String value) {
+    _title = value.trim();
+    notifyListeners();
+  }
+
+  void setDescription(String? value) {
+    _description = value?.trim();
+    notifyListeners();
+  }
+
+  void setDueDate(DateTime? value) {
+    _dueDate = value;
+    notifyListeners();
+  }
+
+  Future<bool> updateTask() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      final email = FirebaseAuth.instance.currentUser?.email;
+      if (email == null) throw Exception('User not authenticated');
+      if (_task == null) throw Exception('No task to update');
+      final updatedTask = TaskEntity(
         id: _task!.id,
-        title: _task!.title,
-        description: _task!.description,
-        dueDate: date,
+        title: _title,
+        description: _description,
+        dueDate: _dueDate,
         isCompleted: _task!.isCompleted,
+        lastSyncTime: DateTime.now(),
+        email: email,
       );
-      notifyListeners();
-    }
-  }
-
-  // Update the task
-  Future<bool> updateTask({
-    required String title,
-    String? description,
-    required DateTime? dueDate,
-  }) async {
-    if (title.isEmpty) {
-      _errorMessage = 'Title is required';
-      notifyListeners();
-      return false;
-    }
-
-    if (_task == null) {
-      _errorMessage = 'No task to update';
-      notifyListeners();
-      return false;
-    }
-
-    final updatedTask = TaskEntity(
-      id: _task?.id,
-      title: title,
-      description: description,
-      dueDate: dueDate,
-      isCompleted: _task!.isCompleted,
-    );
-
-    try {
-      await _taskRepository.updateTask(updatedTask);
-      _task = updatedTask;
-      _errorMessage = null;
+      await _repository.updateTask(updatedTask);
+      _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = 'Failed to update task';
+      _errorMessage = 'Failed to update task: $e';
+      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // Delete the task
   Future<bool> deleteTask() async {
-    if (_task == null || _task?.id == null) {
-      _errorMessage = 'No task to delete';
-      notifyListeners();
-      return false;
-    }
-
     try {
-      await _taskRepository.deleteTask(_task!.id!);
-      _errorMessage = null;
+      _isLoading = true;
+      notifyListeners();
+      if (_task == null) throw Exception('No task to delete');
+      await _repository.deleteTask(_task!.id!);
+      _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = 'Failed to delete task';
+      _errorMessage = 'Failed to delete task: $e';
+      _isLoading = false;
       notifyListeners();
       return false;
     }

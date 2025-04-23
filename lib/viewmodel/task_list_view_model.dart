@@ -2,39 +2,35 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 
-/// ViewModel for managing the list of tasks, including fetching and updating tasks.
 class TaskListViewModel extends ChangeNotifier {
-  final TaskRepository _taskRepository;
+  TaskListViewModel({TaskRepository? repository})
+      : _repository = repository ?? TaskRepository();
+
+  final TaskRepository _repository;
+
   List<TaskEntity> _tasks = [];
   bool _isLoading = false;
+  String? _errorMessage;
 
-  TaskListViewModel({TaskRepository? taskRepository})
-      : _taskRepository = taskRepository ?? TaskRepository();
-
-  /// List of tasks to display.
   List<TaskEntity> get tasks => _tasks;
-
-  /// Whether tasks are currently being fetched or updated.
   bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
-  /// Fetches all tasks from the repository.
   Future<void> fetchTasks() async {
     try {
       _isLoading = true;
       notifyListeners();
-      _tasks = await _taskRepository.getTasks();
+      await _repository.syncTasks(); // Sync before fetching
+      _tasks = await _repository.getTasks();
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      if (kDebugMode) {
-        print('TaskListViewModel.fetchTasks error: $e');
-      }
+      _errorMessage = 'Failed to load tasks: $e';
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Toggles the completion status of a task.
   Future<void> toggleTaskCompletion(TaskEntity task) async {
     try {
       final updatedTask = TaskEntity(
@@ -43,27 +39,16 @@ class TaskListViewModel extends ChangeNotifier {
         description: task.description,
         dueDate: task.dueDate,
         isCompleted: !task.isCompleted,
+        lastSyncTime: DateTime.now(),
+        email: task.email,
       );
-      await _taskRepository.updateTask(updatedTask);
-      _tasks = _tasks.map((t) => t.id == task.id ? updatedTask : t).toList();
+      await _repository.updateTask(updatedTask);
+      await _repository.syncTasks();
+      _tasks = await _repository.getTasks();
       notifyListeners();
     } catch (e) {
-      if (kDebugMode) {
-        print('TaskListViewModel.toggleTaskCompletion error: $e');
-      }
-    }
-  }
-
-  /// Deletes a task by ID.
-  Future<void> deleteTask(int id) async {
-    try {
-      await _taskRepository.deleteTask(id);
-      _tasks = _tasks.where((t) => t.id != id).toList();
+      _errorMessage = 'Failed to update task: $e';
       notifyListeners();
-    } catch (e) {
-      if (kDebugMode) {
-        print('TaskListViewModel.deleteTask error: $e');
-      }
     }
   }
 }

@@ -18,6 +18,8 @@ class AppConstants {
   static const String databaseName = 'tasks.db';
   static const String tableName = 'tasks';
   static const int version = 1;
+  static const String keyLastSyncTime = 'lastSyncTime';
+  static const String keyEmail = 'email';
 
   // Error messages
   static const String errorTitleRequired = 'Please enter a title';
