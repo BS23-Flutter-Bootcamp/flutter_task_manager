@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/routes/app_route_name.dart';
+import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  void showAnimation() {
     Future.delayed(const Duration(seconds: 2), () {
-      if (context.mounted) {
+      if (mounted) {
         try {
           context.go(RouteNames.taskListScreen);
         } catch (e) {
@@ -17,7 +21,16 @@ class SplashScreen extends StatelessWidget {
         }
       }
     });
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    showAnimation();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: Center(
