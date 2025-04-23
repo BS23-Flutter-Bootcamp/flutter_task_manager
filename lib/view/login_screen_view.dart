@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
+import 'package:flutter_task_manager/view/widgets/sign_in_helper.dart';
 import 'package:flutter_task_manager/viewmodel/login_screen_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,10 @@ class LoginScreenView extends StatelessWidget {
         body: Builder(
           builder: (BuildContext providerContext) {
             return ListenableBuilder(
-              listenable: Provider.of<LoginViewModel>(providerContext, listen: false),
+              listenable: Provider.of<LoginViewModel>(
+                providerContext,
+                listen: false,
+              ),
               builder: (context, child) {
                 final viewModel = Provider.of<LoginViewModel>(providerContext);
                 return Center(
@@ -89,35 +93,66 @@ class LoginScreenView extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _SocialSignInButton(
-                                  icon: Icons.g_mobiledata,
-                                  color: Colors.red,
-                                  isLoading: viewModel.isLoading,
-                                  onPressed: () => _handleGoogleSignIn(providerContext),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.g_mobiledata,
+                                    color: Colors.red,
+                                    size: 30,
+                                  ),
+                                  onPressed:
+                                      viewModel.isLoading
+                                          ? null
+                                          : () =>
+                                              SignInHelper.handleGoogleSignIn(
+                                                providerContext,
+                                              ),
                                 ),
-                                _SocialSignInButton(
-                                  icon: Icons.facebook,
-                                  color: Colors.blue,
-                                  isLoading: viewModel.isLoading,
-                                  onPressed: () => _handleFacebookSignIn(providerContext),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.facebook,
+                                    color: Colors.blue,
+                                    size: 30,
+                                  ),
+                                  onPressed:
+                                      viewModel.isLoading
+                                          ? null
+                                          : () =>
+                                              SignInHelper.handleFacebookSignIn(
+                                                providerContext,
+                                              ),
                                 ),
-                                _SocialSignInButton(
-                                  icon: Icons.apple,
-                                  color: Colors.black,
-                                  isLoading: viewModel.isLoading,
-                                  onPressed: () => _handleAppleSignIn(providerContext),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.apple,
+                                    color: Colors.black,
+                                    size: 30,
+                                  ),
+                                  onPressed:
+                                      viewModel.isLoading
+                                          ? null
+                                          : () =>
+                                              SignInHelper.handleAppleSignIn(
+                                                providerContext,
+                                              ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: viewModel.isFormValid && !viewModel.isLoading
-                                  ? () => _handleLogin(providerContext)
-                                  : null,
+                              onPressed:
+                                  viewModel.isFormValid && !viewModel.isLoading
+                                      ? () {
+                                        SignInHelper.handleLogin(
+                                          context: providerContext,
+                                          viewModel: viewModel,
+                                        );
+                                      }
+                                      : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: viewModel.isFormValid
-                                    ? theme.primaryColor
-                                    : theme.primaryColor.withOpacity(0.5),
+                                backgroundColor:
+                                    viewModel.isFormValid
+                                        ? theme.primaryColor
+                                        : theme.primaryColor.withAlpha(128),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
@@ -126,22 +161,24 @@ class LoginScreenView extends StatelessWidget {
                                   vertical: 12,
                                 ),
                               ),
-                              child: viewModel.isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
+                              child:
+                                  viewModel.isLoading
+                                      ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                      : Text(
+                                        'LOGIN',
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
                                       ),
-                                    )
-                                  : Text(
-                                      'LOGIN',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
                             ),
                             const SizedBox(height: 16),
                             if (viewModel.errorMessage != null)
@@ -153,26 +190,33 @@ class LoginScreenView extends StatelessWidget {
                               ),
                             const SizedBox(height: 16),
                             GestureDetector(
-                              onTap: viewModel.isLoading
-                                  ? null
-                                  : () => providerContext.go(RouteNames.signUpScreen),
+                              onTap:
+                                  viewModel.isLoading
+                                      ? null
+                                      : () => providerContext.go(
+                                        RouteNames.signUpScreen,
+                                      ),
                               child: Text.rich(
                                 TextSpan(
                                   children: [
                                     TextSpan(
                                       text: 'Don\'t have an account? ',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: Colors.blue,
-                                        decoration: TextDecoration.underline,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.blue,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                     ),
                                     TextSpan(
                                       text: 'Sign up',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue,
-                                        decoration: TextDecoration.underline,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -189,60 +233,6 @@ class LoginScreenView extends StatelessWidget {
           },
         ),
       ),
-    );
-  }
-
-  Future<void> _handleLogin(BuildContext context) async {
-    final viewModel = Provider.of<LoginViewModel>(context, listen: false);
-    final success = await viewModel.login();
-    if (success && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Logged in successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      context.go(RouteNames.taskListScreen);
-    }
-  }
-
-  void _handleGoogleSignIn(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Google Sign In not implemented')),
-    );
-  }
-
-  void _handleFacebookSignIn(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Facebook Sign In not implemented')),
-    );
-  }
-
-  void _handleAppleSignIn(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Apple Sign In not implemented')),
-    );
-  }
-}
-
-class _SocialSignInButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  const _SocialSignInButton({
-    required this.icon,
-    required this.color,
-    required this.isLoading,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(icon, color: color, size: 30),
-      onPressed: isLoading ? null : onPressed,
     );
   }
 }
