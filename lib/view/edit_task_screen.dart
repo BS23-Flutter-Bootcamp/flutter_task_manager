@@ -82,7 +82,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Edit Task',
+                              'Edit your to-do',
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,

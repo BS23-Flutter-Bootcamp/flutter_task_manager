@@ -18,8 +18,6 @@ class TaskListScreen extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () {
-              // Handle logout action here
-              // For example, you can navigate to the login screen or perform logout logic
               context.go(RouteNames.loginScreen);
               
             },
@@ -113,7 +111,7 @@ class TaskListScreen extends StatelessWidget {
                               task: task,
                               onTap: () {
                                 context.go(
-                                  RouteNames.editTaskScreen,
+                                  RouteNames.detailsPageScreen,
                                   extra: task,
                                 );
                               },
