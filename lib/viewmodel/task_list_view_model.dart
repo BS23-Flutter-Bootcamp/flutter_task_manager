@@ -20,7 +20,7 @@ class TaskListViewModel extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      await _repository.syncTasks(); // Sync before fetching
+      //await _repository.syncTasks(); // Sync before fetching
       _tasks = await _repository.getTasks();
       _isLoading = false;
       notifyListeners();

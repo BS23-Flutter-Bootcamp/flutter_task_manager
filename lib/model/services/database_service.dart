@@ -133,6 +133,18 @@ class DatabaseService {
       rethrow;
     }
   }
+  Future<TaskEntity?> getTaskById(int id) async {
+  final db = await database;
+  final maps = await db.query(
+    'tasks',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+  if (maps.isNotEmpty) {
+    return TaskEntity.fromMap(maps.first);
+  }
+  return null;
+}
 
   Future<void> close() async {
     try {

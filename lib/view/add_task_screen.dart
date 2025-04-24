@@ -25,8 +25,10 @@ class AddTaskScreen extends StatelessWidget {
         backgroundColor: theme.scaffoldBackgroundColor,
         body: Builder(
           builder: (BuildContext providerContext) {
-            return Consumer<AddTaskViewModel>(
-              builder: (context, viewModel, child) {
+            final viewModel = Provider.of<AddTaskViewModel>(providerContext, listen: false);
+            return ListenableBuilder(
+              listenable: viewModel,
+              builder: (context, child) {
                 return Center(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -97,9 +99,7 @@ class AddTaskScreen extends StatelessWidget {
                                   fillColor: Colors.grey[100],
                                 ),
                                 child: Text(
-                                  viewModel.dueDate != null
-                                      ? '${viewModel.dueDate!.day}/${viewModel.dueDate!.month}/${viewModel.dueDate!.year}'
-                                      : 'Select a date',
+                                  '${viewModel.dueDate.day}/${viewModel.dueDate.month}/${viewModel.dueDate.year}',
                                   style: theme.textTheme.bodyMedium,
                                 ),
                               ),

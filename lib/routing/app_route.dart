@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/add_task_screen.dart';
 import 'package:flutter_task_manager/view/details_page_screen.dart';
@@ -30,9 +31,9 @@ final GoRouter router = GoRouter(
       path: RouteNames.addTaskScreen,
       builder: (context, state) => const AddTaskScreen(),
     ),
-    GoRoute(
+   GoRoute(
       path: RouteNames.editTaskScreen,
-      builder: (context, state) => const EditTaskScreen(),
+      builder: (context, state) => EditTaskScreen(task: state.extra as TaskEntity?),
     ),
     GoRoute(
       path: RouteNames.detailsPageScreen,

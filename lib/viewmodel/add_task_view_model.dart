@@ -1,13 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddTaskViewModel extends ChangeNotifier {
   final TaskRepository _repository;
   String _title = '';
   String? _description;
-  DateTime? _dueDate;
+  DateTime _dueDate = DateTime.now();
   String? _errorMessage;
   bool _isLoading = false;
 
@@ -17,7 +17,7 @@ class AddTaskViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get title => _title;
   String? get description => _description;
-  DateTime? get dueDate => _dueDate;
+  DateTime get dueDate => _dueDate;
   bool get isLoading => _isLoading;
 
   void setTitle(String value) {
@@ -30,17 +30,18 @@ class AddTaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDueDate(DateTime? value) {
+  void setDueDate(DateTime value) {
     _dueDate = value;
     notifyListeners();
   }
 
-Future<bool> addTask() async {
+  Future<bool> addTask() async {
     try {
       _isLoading = true;
       notifyListeners();
       final email = FirebaseAuth.instance.currentUser?.email;
       if (email == null) throw Exception('User not authenticated');
+      if (_title.isEmpty) throw Exception('Title is required');
       final task = TaskEntity(
         title: _title,
         description: _description,

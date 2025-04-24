@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
   final TaskRepository _repository;
@@ -30,12 +30,12 @@ class EditTaskViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   void setTitle(String value) {
-    _title = value.trim();
+    _title = value;
     notifyListeners();
   }
 
   void setDescription(String? value) {
-    _description = value?.trim();
+    _description = value;
     notifyListeners();
   }
 

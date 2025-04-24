@@ -18,32 +18,21 @@ class TaskListScreen extends StatelessWidget {
           title: Text(
             'Task List',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Theme.of(context).appBarTheme.foregroundColor,
-            ),
+                  color: Theme.of(context).appBarTheme.foregroundColor,
+                ),
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.sync),
               onPressed: () async {
-                final viewModel = Provider.of<TaskListViewModel>(
-                  context,
-                  listen: false,
-                );
+                final viewModel = Provider.of<TaskListViewModel>(context, listen: false);
                 try {
                   await viewModel.fetchTasks();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Tasks synced successfully!'),
-                        backgroundColor:
-                            Colors.green, // Adjust color based on SnackbarType
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ), // Rounded corners
-                        ),
-                        duration: const Duration(seconds: 2),
+                        backgroundColor: Colors.green,
                       ),
                     );
                   }
@@ -51,20 +40,8 @@ class TaskListScreen extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'Sync failed: $e',
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ), // Ensures contrast
-                        ),
-                        backgroundColor: Colors.red, // Error indication
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ), // Rounded corners
-                        ),
-                        duration: const Duration(seconds: 3),
+                        content: Text('Sync failed: $e'),
+                        backgroundColor: Colors.red,
                       ),
                     );
                   }
@@ -76,14 +53,9 @@ class TaskListScreen extends StatelessWidget {
         body: Builder(
           builder: (BuildContext providerContext) {
             return ListenableBuilder(
-              listenable: Provider.of<TaskListViewModel>(
-                providerContext,
-                listen: false,
-              ),
+              listenable: Provider.of<TaskListViewModel>(providerContext, listen: false),
               builder: (context, child) {
-                final viewModel = Provider.of<TaskListViewModel>(
-                  providerContext,
-                );
+                final viewModel = Provider.of<TaskListViewModel>(providerContext);
                 if (viewModel.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -91,29 +63,29 @@ class TaskListScreen extends StatelessWidget {
                 return tasks.isEmpty
                     ? const Center(child: Text('No tasks available'))
                     : CustomScrollView(
-                      slivers: [
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final task = tasks[index];
-                            return TaskListItem(
-                              task: task,
-                              onTap: () {
-                                context.go(
-                                  RouteNames.detailsPageScreen,
-                                  extra: task,
+                        slivers: [
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final task = tasks[index];
+                                return TaskListItem(
+                                  task: task,
+                                  onTap: () {
+                                    context.go(
+                                      RouteNames.editTaskScreen,
+                                      extra: task,
+                                    );
+                                  },
+                                  onCheckboxChanged: (value) {
+                                    viewModel.toggleTaskCompletion(task);
+                                  },
                                 );
                               },
-                              onCheckboxChanged: (value) {
-                                viewModel.toggleTaskCompletion(task);
-                              },
-                            );
-                          }, childCount: tasks.length),
-                        ),
-                      ],
-                    );
+                              childCount: tasks.length,
+                            ),
+                          ),
+                        ],
+                      );
               },
             );
           },
