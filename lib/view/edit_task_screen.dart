@@ -40,6 +40,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       create: (_) => EditTaskViewModel(task: widget.task),
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(RouteNames.taskListScreen),
+          ),
           title: Text(
             'Edit Task',
             style: theme.textTheme.titleLarge?.copyWith(

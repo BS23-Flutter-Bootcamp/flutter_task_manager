@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/services/database_service.dart';
 import 'package:flutter_task_manager/model/services/firestore_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class TaskRepository {
   TaskRepository({
@@ -20,7 +21,7 @@ class TaskRepository {
     try {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
       final updatedTask = TaskEntity(
-        id: task.id ?? DateTime.now().millisecondsSinceEpoch, // Ensure unique ID
+        id: task.id ?? DateTime.now().millisecondsSinceEpoch,
         title: task.title,
         description: task.description,
         dueDate: task.dueDate,
@@ -35,8 +36,15 @@ class TaskRepository {
       } else {
         await _databaseService.updateTask(updatedTask);
       }
-      // Sync to Firestore
-      await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
+      // Sync to Firestore if online
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (!connectivityResult.contains(ConnectivityResult.none)) {
+        await _firestoreService
+            .upsertTask(updatedTask, _currentUserEmail!)
+            .timeout(const Duration(seconds: 10), onTimeout: () {
+          throw Exception('Firestore sync timed out');
+        });
+      }
     } catch (e) {
       if (kDebugMode) print('Add Task Error: $e');
       rethrow;
@@ -67,8 +75,15 @@ class TaskRepository {
       );
       // Update SQLite first
       await _databaseService.updateTask(updatedTask);
-      // Sync to Firestore
-      await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
+      // Sync to Firestore if online
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (!connectivityResult.contains(ConnectivityResult.none)) {
+        await _firestoreService
+            .upsertTask(updatedTask, _currentUserEmail!)
+            .timeout(const Duration(seconds: 10), onTimeout: () {
+          throw Exception('Firestore sync timed out');
+        });
+      }
     } catch (e) {
       if (kDebugMode) print('Update Task Error: $e');
       rethrow;
@@ -80,8 +95,15 @@ class TaskRepository {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
       // Delete from SQLite first
       await _databaseService.deleteTask(id);
-      // Delete from Firestore
-      await _firestoreService.deleteTask(id, _currentUserEmail!);
+      // Delete from Firestore if online
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (!connectivityResult.contains(ConnectivityResult.none)) {
+        await _firestoreService
+            .deleteTask(id, _currentUserEmail!)
+            .timeout(const Duration(seconds: 10), onTimeout: () {
+          throw Exception('Firestore delete timed out');
+        });
+      }
     } catch (e) {
       if (kDebugMode) print('Delete Task Error: $e');
       rethrow;
@@ -92,11 +114,22 @@ class TaskRepository {
     try {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
 
+      // Skip sync if offline
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        if (kDebugMode) print('Offline mode: Skipping Firestore sync');
+        return;
+      }
+
       // Get local and remote tasks
       final localTasks = await _databaseService.getTasksByEmail(_currentUserEmail!);
-      final remoteTasks = await _firestoreService.getTasks(_currentUserEmail!);
+      final remoteTasks = await _firestoreService
+          .getTasks(_currentUserEmail!)
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        throw Exception('Firestore fetch timed out');
+      });
 
-      // Sync local to remote (only newer tasks)
+      // Sync local to remote (add/update newer tasks)
       for (final localTask in localTasks) {
         final remoteTask = remoteTasks.firstWhere(
           (rt) => rt.id == localTask.id,
@@ -108,13 +141,17 @@ class TaskRepository {
             lastSyncTime: DateTime(1970),
           ),
         );
-        if (remoteTask.lastSyncTime == null ||
-            localTask.lastSyncTime!.isAfter(remoteTask.lastSyncTime!)) {
-          await _firestoreService.upsertTask(localTask, _currentUserEmail!);
+        // Prioritize local task if its lastSyncTime is newer
+        if (localTask.lastSyncTime!.isAfter(remoteTask.lastSyncTime ?? DateTime(1970))) {
+          await _firestoreService
+              .upsertTask(localTask, _currentUserEmail!)
+              .timeout(const Duration(seconds: 10), onTimeout: () {
+            throw Exception('Firestore sync timed out');
+          });
         }
       }
 
-      // Sync remote to local (only newer tasks, avoid deleted tasks)
+      // Sync remote to local (only for newer remote tasks)
       for (final remoteTask in remoteTasks) {
         final localTask = localTasks.firstWhere(
           (lt) => lt.id == remoteTask.id,
@@ -126,8 +163,8 @@ class TaskRepository {
             lastSyncTime: DateTime(1970),
           ),
         );
-        if (localTask.lastSyncTime == null ||
-            remoteTask.lastSyncTime!.isAfter(localTask.lastSyncTime!)) {
+        // Only update local if remote is newer
+        if (remoteTask.lastSyncTime!.isAfter(localTask.lastSyncTime ?? DateTime(1970))) {
           final existingTask = await _databaseService.getTaskById(remoteTask.id!);
           if (existingTask == null) {
             await _databaseService.insertTask(remoteTask);
@@ -137,10 +174,14 @@ class TaskRepository {
         }
       }
 
-      // Remove local tasks not in remote (handle deletions)
-      for (final localTask in localTasks) {
-        if (!remoteTasks.any((rt) => rt.id == localTask.id)) {
-          await _databaseService.deleteTask(localTask.id!);
+      // Delete remote tasks not in local (propagate offline deletions)
+      for (final remoteTask in remoteTasks) {
+        if (!localTasks.any((lt) => lt.id == remoteTask.id)) {
+          await _firestoreService
+              .deleteTask(remoteTask.id!, _currentUserEmail!)
+              .timeout(const Duration(seconds: 10), onTimeout: () {
+            throw Exception('Firestore delete timed out');
+          });
         }
       }
     } catch (e) {

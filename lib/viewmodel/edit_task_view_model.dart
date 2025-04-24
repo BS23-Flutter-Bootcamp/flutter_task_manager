@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
   final TaskRepository _repository;
@@ -47,14 +48,18 @@ class EditTaskViewModel extends ChangeNotifier {
   Future<bool> updateTask() async {
     try {
       _isLoading = true;
+      _errorMessage = null;
       notifyListeners();
+
       final email = FirebaseAuth.instance.currentUser?.email;
       if (email == null) throw Exception('User not authenticated');
       if (_task == null) throw Exception('No task to update');
+      if (_title.trim().isEmpty) throw Exception('Title is required');
+
       final updatedTask = TaskEntity(
         id: _task!.id,
-        title: _title,
-        description: _description,
+        title: _title.trim(),
+        description: _description?.trim(),
         dueDate: _dueDate,
         isCompleted: _task!.isCompleted,
         lastSyncTime: DateTime.now(),
@@ -65,7 +70,11 @@ class EditTaskViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = 'Failed to update task: $e';
+      final connectivityResult = await Connectivity().checkConnectivity();
+      final isOffline = connectivityResult.contains(ConnectivityResult.none);
+      _errorMessage = isOffline
+          ? 'Task updated locally. Sync when online.'
+          : 'Failed to update task: $e';
       _isLoading = false;
       notifyListeners();
       return false;
@@ -75,14 +84,20 @@ class EditTaskViewModel extends ChangeNotifier {
   Future<bool> deleteTask() async {
     try {
       _isLoading = true;
+      _errorMessage = null;
       notifyListeners();
+
       if (_task == null) throw Exception('No task to delete');
       await _repository.deleteTask(_task!.id!);
       _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = 'Failed to delete task: $e';
+            final connectivityResult = await Connectivity().checkConnectivity();
+      final isOffline =connectivityResult.contains(ConnectivityResult.none);
+      _errorMessage = isOffline
+          ? 'Task deleted locally. Sync when online.'
+          : 'Failed to delete task: $e';
       _isLoading = false;
       notifyListeners();
       return false;

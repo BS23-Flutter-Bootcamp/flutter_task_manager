@@ -50,7 +50,7 @@ class AddTaskViewModel extends ChangeNotifier {
         lastSyncTime: DateTime.now(),
         email: email,
       );
-      await _repository.addTask(task);
+      await _repository.addTask(task); // Instant sync handled in TaskRepository
       _isLoading = false;
       notifyListeners();
       return true;

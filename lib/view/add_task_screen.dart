@@ -14,6 +14,10 @@ class AddTaskScreen extends StatelessWidget {
       create: (_) => AddTaskViewModel(),
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go(RouteNames.taskListScreen),
+          ),  
           title: Text(
             'Add Task',
             style: theme.textTheme.titleLarge?.copyWith(
