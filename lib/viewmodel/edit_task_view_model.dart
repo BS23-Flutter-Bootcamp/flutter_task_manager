@@ -10,12 +10,12 @@ class EditTaskViewModel extends ChangeNotifier {
   String? _description;
   DateTime? _dueDate;
   String? _errorMessage;
-  TaskEntity? _task;
+  final TaskEntity? _task;
   bool _isLoading = false;
 
   EditTaskViewModel({TaskRepository? repository, TaskEntity? task})
-      : _repository = repository ?? TaskRepository(),
-        _task = task {
+    : _repository = repository ?? TaskRepository(),
+      _task = task {
     if (task != null) {
       _title = task.title;
       _description = task.description;
@@ -57,11 +57,11 @@ class EditTaskViewModel extends ChangeNotifier {
       if (_title.trim().isEmpty) throw Exception('Title is required');
 
       final updatedTask = TaskEntity(
-        id: _task!.id,
+        id: _task.id,
         title: _title.trim(),
         description: _description?.trim(),
         dueDate: _dueDate,
-        isCompleted: _task!.isCompleted,
+        isCompleted: _task.isCompleted,
         lastSyncTime: DateTime.now(),
         email: email,
       );
@@ -72,9 +72,10 @@ class EditTaskViewModel extends ChangeNotifier {
     } catch (e) {
       final connectivityResult = await Connectivity().checkConnectivity();
       final isOffline = connectivityResult.contains(ConnectivityResult.none);
-      _errorMessage = isOffline
-          ? 'Task updated locally. Sync when online.'
-          : 'Failed to update task: $e';
+      _errorMessage =
+          isOffline
+              ? 'Task updated locally. Sync when online.'
+              : 'Failed to update task: $e';
       _isLoading = false;
       notifyListeners();
       return false;
@@ -88,16 +89,17 @@ class EditTaskViewModel extends ChangeNotifier {
       notifyListeners();
 
       if (_task == null) throw Exception('No task to delete');
-      await _repository.deleteTask(_task!.id!);
+      await _repository.deleteTask(_task.id!);
       _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
-            final connectivityResult = await Connectivity().checkConnectivity();
-      final isOffline =connectivityResult.contains(ConnectivityResult.none);
-      _errorMessage = isOffline
-          ? 'Task deleted locally. Sync when online.'
-          : 'Failed to delete task: $e';
+      final connectivityResult = await Connectivity().checkConnectivity();
+      final isOffline = connectivityResult.contains(ConnectivityResult.none);
+      _errorMessage =
+          isOffline
+              ? 'Task deleted locally. Sync when online.'
+              : 'Failed to delete task: $e';
       _isLoading = false;
       notifyListeners();
       return false;

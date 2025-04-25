@@ -25,10 +25,16 @@ class DatabaseService {
         await getDatabasesPath(),
         AppConstants.databaseName,
       );
+      if (kDebugMode) {
+        print('Initializing database at path: $path');
+      }
       return await openDatabase(
         path,
-        version: AppConstants.version + 1, // Increment version for migration
+        version: AppConstants.version + 1,
         onCreate: (db, version) async {
+          if (kDebugMode) {
+            print('Creating table: ${AppConstants.tableName}');
+          }
           await db.execute('''
             CREATE TABLE ${AppConstants.tableName} (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +49,9 @@ class DatabaseService {
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            // Add lastSyncTime and email columns
+            if (kDebugMode) {
+              print('Upgrading database, adding lastSyncTime and email columns');
+            }
             await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN lastSyncTime TEXT');
             await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN email TEXT NOT NULL DEFAULT ""');
           }
@@ -57,10 +65,66 @@ class DatabaseService {
     }
   }
 
-  Future<void> insertTask(TaskEntity task) async {
+  Future<bool> _tableExists(Database db, String tableName) async {
+    final result = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+      [tableName],
+    );
+    return result.isNotEmpty;
+  }
+
+  Future<void> dropTable() async {
     try {
       final db = await database;
-      await db.insert(
+      if (kDebugMode) {
+        print('Dropping table: ${AppConstants.tableName}');
+      }
+      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableName}');
+      if (kDebugMode) {
+        print('Recreating table: ${AppConstants.tableName}');
+      }
+      await db.execute('''
+        CREATE TABLE ${AppConstants.tableName} (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT NOT NULL,
+          description TEXT,
+          dueDate TEXT,
+          isCompleted INTEGER NOT NULL,
+          lastSyncTime TEXT,
+          email TEXT NOT NULL
+        )
+      ''');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Drop Table Error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  Future<int> insertTask(TaskEntity task) async {
+    try {
+      final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) {
+          print('Table ${AppConstants.tableName} does not exist, recreating...');
+        }
+        await db.execute('''
+          CREATE TABLE ${AppConstants.tableName} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            dueDate TEXT,
+            isCompleted INTEGER NOT NULL,
+            lastSyncTime TEXT,
+            email TEXT NOT NULL
+          )
+        ''');
+      }
+      if (kDebugMode) {
+        print('Inserting task into ${AppConstants.tableName}: ${task.toMap()}');
+      }
+      return await db.insert(
         AppConstants.tableName,
         task.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
@@ -76,6 +140,12 @@ class DatabaseService {
   Future<List<TaskEntity>> getTasks() async {
     try {
       final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) {
+          print('Table ${AppConstants.tableName} does not exist, returning empty list');
+        }
+        return [];
+      }
       final List<Map<String, dynamic>> maps = await db.query(
         AppConstants.tableName,
       );
@@ -91,6 +161,12 @@ class DatabaseService {
   Future<List<TaskEntity>> getTasksByEmail(String email) async {
     try {
       final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) {
+          print('Table ${AppConstants.tableName} does not exist, returning empty list');
+        }
+        return [];
+      }
       final List<Map<String, dynamic>> maps = await db.query(
         AppConstants.tableName,
         where: 'email = ?',
@@ -108,6 +184,22 @@ class DatabaseService {
   Future<void> updateTask(TaskEntity task) async {
     try {
       final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) {
+          print('Table ${AppConstants.tableName} does not exist, recreating...');
+        }
+        await db.execute('''
+          CREATE TABLE ${AppConstants.tableName} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            dueDate TEXT,
+            isCompleted INTEGER NOT NULL,
+            lastSyncTime TEXT,
+            email TEXT NOT NULL
+          )
+        ''');
+      }
       await db.update(
         AppConstants.tableName,
         task.toMap(),
@@ -125,6 +217,12 @@ class DatabaseService {
   Future<void> deleteTask(int id) async {
     try {
       final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) {
+          print('Table ${AppConstants.tableName} does not exist, skipping delete');
+        }
+        return;
+      }
       await db.delete(AppConstants.tableName, where: 'id = ?', whereArgs: [id]);
     } catch (e) {
       if (kDebugMode) {
@@ -133,18 +231,32 @@ class DatabaseService {
       rethrow;
     }
   }
+
   Future<TaskEntity?> getTaskById(int id) async {
-  final db = await database;
-  final maps = await db.query(
-    'tasks',
-    where: 'id = ?',
-    whereArgs: [id],
-  );
-  if (maps.isNotEmpty) {
-    return TaskEntity.fromMap(maps.first);
+    try {
+      final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) {
+          print('Table ${AppConstants.tableName} does not exist, returning null');
+        }
+        return null;
+      }
+      final maps = await db.query(
+        AppConstants.tableName,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      if (maps.isNotEmpty) {
+        return TaskEntity.fromMap(maps.first);
+      }
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Database Error: $e');
+      }
+      rethrow;
+    }
   }
-  return null;
-}
 
   Future<void> close() async {
     try {

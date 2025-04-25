@@ -15,9 +15,9 @@ class AppConstants {
   static const String keyIsCompleted = 'isCompleted';
 
   // Database constants
-  static const String databaseName = 'tasks.db';
-  static const String tableName = 'tasks';
-  static const int version = 1;
+  static const String databaseName = 'task_manager.db';
+  static const String tableName = 'task_manager';
+  static const int version = 0;
   static const String keyLastSyncTime = 'lastSyncTime';
   static const String keyEmail = 'email';
 

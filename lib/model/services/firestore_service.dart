@@ -6,28 +6,22 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> upsertTask(TaskEntity task, String email) async {
-    try {
-      await _firestore
-          .collection('users')
-          .doc(email)
-          .collection('tasks')
-          .doc(task.id.toString())
-          .set(task.toFirestore());
-    } catch (e) {
-      if (kDebugMode) {
-        print('Firestore Error: $e');
-      }
-      rethrow;
-    }
+    final docRef = _firestore
+        .collection('users')
+        .doc(email)
+        .collection('tasks')
+        .doc(task.id.toString());
+    await docRef.set(task.toFirestore());
   }
 
   Future<List<TaskEntity>> getTasks(String email) async {
     try {
-      final snapshot = await _firestore
-          .collection('users')
-          .doc(email)
-          .collection('tasks')
-          .get();
+      final snapshot =
+          await _firestore
+              .collection('users')
+              .doc(email)
+              .collection('tasks')
+              .get();
       return snapshot.docs
           .map((doc) => TaskEntity.fromFirestore(doc.data()))
           .toList();
