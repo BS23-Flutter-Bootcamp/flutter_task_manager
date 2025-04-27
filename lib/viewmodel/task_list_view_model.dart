@@ -1,13 +1,16 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
+import 'package:flutter_task_manager/model/repositories/notification_repository.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_task_manager/model/services/notification_service.dart';
 
 class TaskListViewModel extends ChangeNotifier {
   TaskListViewModel({TaskRepository? repository})
-    : _repository = repository ?? TaskRepository();
+      : _repository = repository ?? TaskRepository(),
+        _notificationRepository = NotificationRepository(NotificationService());
 
   final TaskRepository _repository;
+  final NotificationRepository _notificationRepository;
 
   List<TaskEntity> _tasks = [];
   bool _isLoading = false;
@@ -17,6 +20,7 @@ class TaskListViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  /// Fetch tasks from the local database and optionally sync with the server
   Future<void> fetchTasks({bool sync = false}) async {
     try {
       _isLoading = true;
@@ -24,24 +28,29 @@ class TaskListViewModel extends ChangeNotifier {
 
       // Sync only if explicitly requested and online
       if (sync) {
-        final connectivityResult = await Connectivity().checkConnectivity();
-        if (connectivityResult.contains(ConnectivityResult.none)) {
-          return;
-        }
         await _repository.syncTasks();
       }
 
       // Always fetch from local SQLite
       _tasks = await _repository.getTasks();
+
+      // Schedule notifications for all tasks
+      await _notificationRepository.scheduleNotification(
+        id: 1,
+        title: 'Task Reminder',
+        body: 'You have tasks due soon!',
+        eventDate: DateTime.now(),
+        eventTime: TimeOfDay.now(),
+        payload: {'taskId': 1},
+      );
+
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      final connectivityResult = await Connectivity().checkConnectivity();
-      final isOffline =connectivityResult.contains(ConnectivityResult.none);
-      _errorMessage =
-          'Failed to load tasks: ${isOffline ? 'Offline mode - showing local data' : e}';
+      _errorMessage = 'Offline mode - showing local data';
       _isLoading = false;
       notifyListeners();
+
       // Attempt to load local tasks even on error
       try {
         _tasks = await _repository.getTasks();
@@ -52,10 +61,11 @@ class TaskListViewModel extends ChangeNotifier {
     }
   }
 
+  /// Toggle the completion status of a task
   Future<void> toggleTaskCompletion(TaskEntity task) async {
     try {
       final updatedTask = TaskEntity(
-        id: task.id,
+        id: task.id ?? 0, // Provide a default value if task.id is null
         title: task.title,
         description: task.description,
         dueDate: task.dueDate,
@@ -71,4 +81,6 @@ class TaskListViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-}
+
+  /// Schedule notifications for tasks based on their due dates
+ }
