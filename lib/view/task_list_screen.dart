@@ -91,6 +91,11 @@ class TaskListScreen extends StatelessWidget {
                 );
               },
             ),
+             IconButton(
+              icon: const Icon(Icons.auto_awesome,color: Colors.blueAccent,),
+              onPressed: () => context.go(RouteNames.generateTaskPlan),
+              tooltip: 'Generate Task Plan',
+            ),
           ],
         ),
         body: Consumer<TaskListViewModel>(

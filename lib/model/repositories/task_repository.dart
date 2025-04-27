@@ -14,14 +14,16 @@ class TaskRepository {
     DatabaseService? databaseService,
     FirestoreService? firestoreService,
     NotificationRepository? notificationRepository,
-  })  : _databaseService = databaseService ?? DatabaseService(),
-        _firestoreService = firestoreService ?? FirestoreService(),
-        _notificationRepository = notificationRepository ?? NotificationRepository();
+  }) : _databaseService = databaseService ?? DatabaseService(),
+       _firestoreService = firestoreService ?? FirestoreService(),
+       _notificationRepository =
+           notificationRepository ?? NotificationRepository();
 
   final DatabaseService _databaseService;
   final FirestoreService _firestoreService;
   final NotificationRepository _notificationRepository;
-  final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   String? get _currentUserEmail => FirebaseAuth.instance.currentUser?.email;
 
@@ -58,7 +60,9 @@ class TaskRepository {
       // Schedule 59-minute reminder
       if (scheduledMinutes.isAfter(DateTime.now())) {
         if (kDebugMode) {
-          print('Scheduling 59-min reminder for task ${task.id} at $scheduledMinutes');
+          print(
+            'Scheduling 59-min reminder for task ${task.id} at $scheduledMinutes',
+          );
         }
         await _notificationRepository.scheduleNotification(
           id: task.id!,
@@ -77,8 +81,6 @@ class TaskRepository {
           dateTimeComponents: canUseExact ? null : DateTimeComponents.time,
         );
       }
-
-     
     } catch (e) {
       if (kDebugMode) {
         print('Failed to schedule notifications for task ${task.id}: $e');
@@ -93,7 +95,6 @@ class TaskRepository {
     }
     try {
       await notificationsPlugin.cancel(taskId);
-     
     } catch (e) {
       if (kDebugMode) {
         print('Failed to cancel notifications for task $taskId: $e');
@@ -124,7 +125,7 @@ class TaskRepository {
         email: updatedTask.email,
       );
       // Schedule test notification
-      
+
       await _notificationRepository.scheduleTestNotification(
         id: taskId,
         title: 'Task Reminder',
@@ -138,9 +139,12 @@ class TaskRepository {
       if (!connectivityResult.contains(ConnectivityResult.none)) {
         await _firestoreService
             .upsertTask(taskWithId, _currentUserEmail!)
-            .timeout(const Duration(seconds: 10), onTimeout: () {
-          throw Exception('Firestore sync timed out');
-        });
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                throw Exception('Firestore sync timed out');
+              },
+            );
       }
       return taskId;
     } catch (e) {
@@ -176,7 +180,7 @@ class TaskRepository {
         await _cancelTaskNotifications(task.id!);
       }
       // Schedule new notifications if task is incomplete
-       await _notificationRepository.scheduleTestNotification(
+      await _notificationRepository.scheduleTestNotification(
         id: task.id!,
         title: 'Task Reminder',
         body: 'Task "${task.title}" is due in 59 minutes!',
@@ -189,9 +193,12 @@ class TaskRepository {
       if (!connectivityResult.contains(ConnectivityResult.none)) {
         await _firestoreService
             .upsertTask(updatedTask, _currentUserEmail!)
-            .timeout(const Duration(seconds: 10), onTimeout: () {
-          throw Exception('Firestore sync timed out');
-        });
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                throw Exception('Firestore sync timed out');
+              },
+            );
       }
     } catch (e) {
       if (kDebugMode) print('Update Task Error: $e');
@@ -211,9 +218,12 @@ class TaskRepository {
       if (!connectivityResult.contains(ConnectivityResult.none)) {
         await _firestoreService
             .deleteTask(id, _currentUserEmail!)
-            .timeout(const Duration(seconds: 10), onTimeout: () {
-          throw Exception('Firestore delete timed out');
-        });
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                throw Exception('Firestore delete timed out');
+              },
+            );
       }
     } catch (e) {
       if (kDebugMode) print('Delete Task Error: $e');
@@ -231,31 +241,42 @@ class TaskRepository {
         return;
       }
 
-      final localTasks = await _databaseService.getTasksByEmail(_currentUserEmail!);
+      final localTasks = await _databaseService.getTasksByEmail(
+        _currentUserEmail!,
+      );
       final remoteTasks = await _firestoreService
           .getTasks(_currentUserEmail!)
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        throw Exception('Firestore fetch timed out');
-      });
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception('Firestore fetch timed out');
+            },
+          );
 
       // Sync local to remote
       for (final localTask in localTasks) {
         final remoteTask = remoteTasks.firstWhere(
           (rt) => rt.id == localTask.id,
-          orElse: () => TaskEntity(
-            id: localTask.id,
-            title: '',
-            dueDate: null,
-            email: _currentUserEmail!,
-            lastSyncTime: DateTime(1970),
-          ),
+          orElse:
+              () => TaskEntity(
+                id: localTask.id,
+                title: '',
+                dueDate: null,
+                email: _currentUserEmail!,
+                lastSyncTime: DateTime(1970),
+              ),
         );
-        if (localTask.lastSyncTime!.isAfter(remoteTask.lastSyncTime ?? DateTime(1970))) {
+        if (localTask.lastSyncTime!.isAfter(
+          remoteTask.lastSyncTime ?? DateTime(1970),
+        )) {
           await _firestoreService
               .upsertTask(localTask, _currentUserEmail!)
-              .timeout(const Duration(seconds: 10), onTimeout: () {
-            throw Exception('Firestore sync timed out');
-          });
+              .timeout(
+                const Duration(seconds: 10),
+                onTimeout: () {
+                  throw Exception('Firestore sync timed out');
+                },
+              );
         }
       }
 
@@ -263,16 +284,21 @@ class TaskRepository {
       for (final remoteTask in remoteTasks) {
         final localTask = localTasks.firstWhere(
           (lt) => lt.id == remoteTask.id,
-          orElse: () => TaskEntity(
-            id: remoteTask.id,
-            title: '',
-            dueDate: null,
-            email: _currentUserEmail!,
-            lastSyncTime: DateTime(1970),
-          ),
+          orElse:
+              () => TaskEntity(
+                id: remoteTask.id,
+                title: '',
+                dueDate: null,
+                email: _currentUserEmail!,
+                lastSyncTime: DateTime(1970),
+              ),
         );
-        if (remoteTask.lastSyncTime!.isAfter(localTask.lastSyncTime ?? DateTime(1970))) {
-          final existingTask = await _databaseService.getTaskById(remoteTask.id!);
+        if (remoteTask.lastSyncTime!.isAfter(
+          localTask.lastSyncTime ?? DateTime(1970),
+        )) {
+          final existingTask = await _databaseService.getTaskById(
+            remoteTask.id!,
+          );
           if (existingTask == null) {
             await _databaseService.insertTask(remoteTask);
             if (!remoteTask.isCompleted) {
@@ -293,13 +319,31 @@ class TaskRepository {
         if (!localTasks.any((lt) => lt.id == remoteTask.id)) {
           await _firestoreService
               .deleteTask(remoteTask.id!, _currentUserEmail!)
-              .timeout(const Duration(seconds: 10), onTimeout: () {
-            throw Exception('Firestore delete timed out');
-          });
+              .timeout(
+                const Duration(seconds: 10),
+                onTimeout: () {
+                  throw Exception('Firestore delete timed out');
+                },
+              );
         }
       }
     } catch (e) {
       if (kDebugMode) print('Sync Tasks Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<int>> addTasksFromAI(List<TaskEntity> tasks) async {
+    try {
+      if (_currentUserEmail == null) throw Exception('User not authenticated');
+      final taskIds = <int>[];
+      for (var task in tasks) {
+        final taskId = await addTask(task);
+        taskIds.add(taskId);
+      }
+      return taskIds;
+    } catch (e) {
+      if (kDebugMode) print('Add Tasks From AI Error: $e');
       rethrow;
     }
   }

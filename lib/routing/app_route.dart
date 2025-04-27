@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/add_task_screen.dart';
+import 'package:flutter_task_manager/view/ai_screen.dart';
 import 'package:flutter_task_manager/view/details_page_screen.dart';
 import 'package:flutter_task_manager/view/edit_task_screen.dart';
 import 'package:flutter_task_manager/view/login_screen_view.dart';
@@ -46,6 +47,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.loginScreen,
       builder: (context, state) => LoginScreenView(), // Added Sign Up route
+    ),
+     GoRoute(
+      path: RouteNames.generateTaskPlan,
+      builder: (context, state) => AiScreen(),
     ),
     
   ],

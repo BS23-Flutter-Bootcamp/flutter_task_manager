@@ -6,4 +6,5 @@ class RouteNames {
   static const String detailsPageScreen = '/details_page';
   static const String signUpScreen = '/sign_up';
   static const String loginScreen = '/login';
+  static const String generateTaskPlan = '/generate_task_plan';
 }
