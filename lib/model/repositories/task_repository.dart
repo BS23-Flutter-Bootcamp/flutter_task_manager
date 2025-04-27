@@ -176,6 +176,11 @@ class TaskRepository {
         await _cancelTaskNotifications(task.id!);
       }
       // Schedule new notifications if task is incomplete
+       await _notificationRepository.scheduleTestNotification(
+        id: task.id!,
+        title: 'Task Reminder',
+        body: 'Task "${task.title}" is due in 59 minutes!',
+      );
       await _scheduleTaskNotifications(updatedTask);
       // Update SQLite
       await _databaseService.updateTask(updatedTask);
