@@ -26,6 +26,7 @@ dependencies:
   flutter_timezone: ^4.1.0
   flutter_local_notifications: ^19.1.0
   google_generative_ai: ^0.4.7
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

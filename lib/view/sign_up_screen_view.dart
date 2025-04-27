@@ -37,7 +37,8 @@ class SignUpScreenView extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Flutter Task Manager',
+                              'Task Manager',
+                              textAlign: TextAlign.center,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,

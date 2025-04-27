@@ -9,11 +9,16 @@ class LoginViewModel extends ChangeNotifier {
   String? _passwordError;
   String? _errorMessage;
   bool _isLoading = false;
+  bool _isRememberMeChecked = false;
+  bool _showPassword = false;
 
   String? get emailError => _emailError;
   String? get passwordError => _passwordError;
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  bool get isRememberMeChecked => _isRememberMeChecked;
+  bool get showPassword => _showPassword;
+
 
   bool get isFormValid =>
       _email.isNotEmpty &&
@@ -28,10 +33,20 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void togglePasswordVisibility(bool value) {
+    _showPassword = value;
+    notifyListeners();
+  }
+
   void setPassword(String value) {
     _password = value;
     _validatePassword();
     _clearGeneralError();
+    notifyListeners();
+  }
+
+  void setRememberMe(bool value) {
+    _isRememberMeChecked = value;
     notifyListeners();
   }
 
@@ -93,4 +108,6 @@ class LoginViewModel extends ChangeNotifier {
       return 'Failed to log in. Please try again';
     }
   }
+
+  
 }

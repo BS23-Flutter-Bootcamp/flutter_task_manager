@@ -34,10 +34,13 @@ class LoginScreenView extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
+                          // crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Flutter Task Manager',
+                              'Task Manager',
+                              textAlign: TextAlign.center,
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -69,18 +72,47 @@ class LoginScreenView extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              obscureText: !viewModel.showPassword,
+                            obscuringCharacter: '*',
                               onChanged: viewModel.setPassword,
                               decoration: InputDecoration(
+                                
+                                suffixIcon: IconButton(
+                                  
+                                  icon: Icon(
+                                    viewModel.showPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                  onPressed: () {
+                                    viewModel.togglePasswordVisibility(!viewModel.showPassword);
+                                    
+                                  },
+                                ),
+
                                 labelText: 'Password',
                                 labelStyle: TextStyle(color: theme.hintColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
+
                                 filled: true,
                                 fillColor: Colors.grey[100],
                                 errorText: viewModel.passwordError,
                               ),
-                              obscureText: true,
+                             
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: viewModel.isRememberMeChecked,
+                                  onChanged: (value) {
+                                    viewModel.setRememberMe(value!);
+                                  },
+                                ),
+                                const Text('Remember me'),
+                              ],
                             ),
                             const SizedBox(height: 20),
                             Text(
