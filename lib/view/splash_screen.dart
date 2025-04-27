@@ -1,19 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
+import 'package:flutter_task_manager/model/services/login_service.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (context.mounted) {
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  final LoginService _loginService = LoginService();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (!mounted) return;
+
+    try {
+      final isRemembered = await _loginService.isRememberMeEnabled();
+      final currentUser = _loginService.currentUser;
+
+      if (currentUser != null && isRemembered) {
+        // User is logged in and remembered
+        if (mounted) {
+          context.go(RouteNames.taskListScreen);
+        }
+      } else {
+        // No user or not remembered
+        if (mounted) {
+          context.go(RouteNames.signUpScreen);
+        }
+      }
+    } catch (e) {
+      // Handle any errors by defaulting to sign up screen
+      if (mounted) {
         context.go(RouteNames.signUpScreen);
       }
-    });
+    }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEDE7F6),
       body: Center(

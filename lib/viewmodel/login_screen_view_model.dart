@@ -18,6 +18,8 @@ class LoginViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isRememberMeChecked => _isRememberMeChecked;
   bool get showPassword => _showPassword;
+  String get email => _email;
+  String get password => _password;
 
 
   bool get isFormValid =>
@@ -50,6 +52,16 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void setErrorMessage(String? message) {
+    _errorMessage = message;
+    notifyListeners();
+  }
+
   void _validateEmail() {
     if (_email.isEmpty) {
       _emailError = 'Email is required';
@@ -79,7 +91,7 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repository.login(_email, _password);
+      await _repository.login(email: _email, password: _password, rememberMe: _isRememberMeChecked);
       _isLoading = false;
       notifyListeners();
       return true;
