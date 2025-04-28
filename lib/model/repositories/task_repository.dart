@@ -49,7 +49,7 @@ class TaskRepository {
       await _notificationRepository.scheduleTestNotification(
         id: taskId,
         title: 'Task Reminder',
-        body: 'Task "${task.title}" is due in 59 minutes!',
+        body: 'Task "${task.title}" is due in 15 minutes!',
       );
 
       // Schedule notifications for incomplete tasks

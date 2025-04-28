@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
-import 'package:flutter_task_manager/model/repositories/notification_repository.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
-import 'package:flutter_task_manager/model/services/notification_service.dart';
 
 class TaskListViewModel extends ChangeNotifier {
   TaskListViewModel({TaskRepository? repository})
-      : _repository = repository ?? TaskRepository(),
-        _notificationRepository = NotificationRepository(NotificationService());
+      : _repository = repository ?? TaskRepository();
 
   final TaskRepository _repository;
-  final NotificationRepository _notificationRepository;
 
   List<TaskEntity> _tasks = [];
   bool _isLoading = false;
@@ -33,16 +29,6 @@ class TaskListViewModel extends ChangeNotifier {
 
       // Always fetch from local SQLite
       _tasks = await _repository.getTasks();
-
-      // Schedule notifications for all tasks
-      await _notificationRepository.scheduleNotification(
-        id: 1,
-        title: 'Task Reminder',
-        body: 'You have tasks due soon!',
-        eventDate: DateTime.now(),
-        eventTime: TimeOfDay.now(),
-        payload: {'taskId': 1},
-      );
 
       _isLoading = false;
       notifyListeners();
@@ -81,6 +67,4 @@ class TaskListViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  /// Schedule notifications for tasks based on their due dates
  }

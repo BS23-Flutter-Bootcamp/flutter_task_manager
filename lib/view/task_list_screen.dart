@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task_manager/model/repositories/notification_repository.dart';
-import 'package:flutter_task_manager/model/services/notification_service.dart';
 import 'package:flutter_task_manager/viewmodel/login_screen_view_model.dart';
-import 'package:flutter_task_manager/viewmodel/notification_view_model.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/task_list_item.dart';
 import 'package:flutter_task_manager/viewmodel/task_list_view_model.dart';
@@ -19,14 +16,7 @@ class TaskListScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => TaskListViewModel()..fetchTasks(),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (_) => NotificationViewModel(
-                NotificationRepository(NotificationService()),
-              )..initialize(),
-        ),
-    
+        )
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -34,10 +24,12 @@ class TaskListScreen extends StatelessWidget {
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               final loginViewModel = Provider.of<LoginViewModel>(
-                context, listen: false,);
+                context,
+                listen: false,
+              );
               await loginViewModel.logout();
 
-                if (context.mounted) {
+              if (context.mounted) {
                 context.go(RouteNames.loginScreen);
               }
             },
@@ -61,7 +53,6 @@ class TaskListScreen extends StatelessWidget {
                       providerContext,
                       listen: false,
                     );
-
                     // Check connectivity
                     final connectivityResult =
                         await Connectivity().checkConnectivity();
@@ -117,42 +108,9 @@ class TaskListScreen extends StatelessWidget {
                 ? const Center(child: Text('No tasks available'))
                 : CustomScrollView(
                   slivers: [
-                    SliverToBoxAdapter(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Consumer<NotificationViewModel>(
-                          builder: (context, notificationViewModel, _) {
-                            return IconButton(
-                              icon: const Icon(
-                                Icons.add_alert,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () async {
-                                try {
-                                  await notificationViewModel
-                                      .showSampleNotification();
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Failed to send notification: $e',
-                                        ),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final task = tasks[index];
-
                         return TaskListItem(
                           task: task,
                           onTap: () {

@@ -62,8 +62,6 @@ class NotificationRepository {
     );
   }
 
- 
-
   /// Schedule a periodic notification
   Future<void> scheduleTaskNotifications(TaskEntity task) async {
     if (task.dueDate == null || task.isCompleted) {
@@ -105,7 +103,7 @@ class NotificationRepository {
     }
   }
 
-   Future<void> cancelTaskNotifications(int taskId) async {
+  Future<void> cancelTaskNotifications(int taskId) async {
     if (kDebugMode) {
       print('Canceling notifications for task: $taskId');
     }
@@ -117,7 +115,6 @@ class NotificationRepository {
       }
     }
   }
-
 
   /// Cancel a specific notification
   Future<void> cancelNotification(int id) async {
