@@ -10,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_task_manager/viewmodel/login_screen_view_model.dart';
 import 'package:provider/provider.dart';
 
+
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
@@ -41,8 +42,6 @@ Future<void> main() async {
     ),
   );
 }
-
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
