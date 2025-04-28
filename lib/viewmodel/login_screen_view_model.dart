@@ -103,6 +103,20 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> logout() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _repository.logout();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to log out. Please try again';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   String _mapFirebaseErrorToMessage(String error) {
     if (error.contains('user-not-found')) {
       return 'No account found with this email';

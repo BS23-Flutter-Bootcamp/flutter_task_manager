@@ -11,4 +11,12 @@ class LoginRepository {
       throw Exception(e.toString());
     }
   }
+
+  Future<void> logout() async {
+    try {
+      await _service.logOut();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

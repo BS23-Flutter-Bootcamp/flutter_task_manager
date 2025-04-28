@@ -23,7 +23,6 @@ class LoginService {
       if (kDebugMode) {
         print('Failed to initialize SharedPreferences: $e');
       }
-      // Don't rethrow - allow the app to continue without preferences
     }
   }
 

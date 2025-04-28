@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/repositories/notification_repository.dart';
 import 'package:flutter_task_manager/model/services/notification_service.dart';
+import 'package:flutter_task_manager/viewmodel/login_screen_view_model.dart';
 import 'package:flutter_task_manager/viewmodel/notification_view_model.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/task_list_item.dart';
@@ -20,25 +21,32 @@ class TaskListScreen extends StatelessWidget {
           create: (_) => TaskListViewModel()..fetchTasks(),
         ),
         ChangeNotifierProvider(
-          create: (_) => NotificationViewModel(
-            NotificationRepository(NotificationService()),
-          )..initialize(),
+          create:
+              (_) => NotificationViewModel(
+                NotificationRepository(NotificationService()),
+              )..initialize(),
         ),
       ],
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              context.go(RouteNames.loginScreen);
+            onPressed: () async {
+              final loginViewModel = Provider.of<LoginViewModel>(
+                context,listen: false,);
+              await loginViewModel.logout();
+
+                if (context.mounted) {
+                context.go(RouteNames.loginScreen);
+              }
             },
           ),
           centerTitle: true,
           title: Text(
             'Task List',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).appBarTheme.foregroundColor,
-                ),
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
           ),
           actions: [
             Builder(
@@ -91,8 +99,8 @@ class TaskListScreen extends StatelessWidget {
                 );
               },
             ),
-             IconButton(
-              icon: const Icon(Icons.auto_awesome,color: Colors.blueAccent,),
+            IconButton(
+              icon: const Icon(Icons.auto_awesome, color: Colors.blueAccent),
               onPressed: () => context.go(RouteNames.generateTaskPlan),
               tooltip: 'Generate Task Plan',
             ),
@@ -107,54 +115,59 @@ class TaskListScreen extends StatelessWidget {
             return tasks.isEmpty
                 ? const Center(child: Text('No tasks available'))
                 : CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Consumer<NotificationViewModel>(
-                            builder: (context, notificationViewModel, _) {
-                              return IconButton(
-                                icon: const Icon(Icons.add_alert, color: Colors.blue),
-                                onPressed: () async {
-                                  try {
-                                    await notificationViewModel.showSampleNotification();
-                            
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Failed to send notification: $e'),
-                                          backgroundColor: Colors.red,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Consumer<NotificationViewModel>(
+                          builder: (context, notificationViewModel, _) {
+                            return IconButton(
+                              icon: const Icon(
+                                Icons.add_alert,
+                                color: Colors.blue,
+                              ),
+                              onPressed: () async {
+                                try {
+                                  await notificationViewModel
+                                      .showSampleNotification();
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Failed to send notification: $e',
                                         ),
-                                      );
-                                    }
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
                                   }
-                                },
-                              );
-                            },
-                          ),
+                                }
+                              },
+                            );
+                          },
                         ),
                       ),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final task = tasks[index];
-                          
-                          return TaskListItem(
-                            task: task,
-                            onTap: () {
-                              context.go(
-                                RouteNames.detailsPageScreen,
-                                extra: task,
-                              );
-                            },
-                            onCheckboxChanged: (value) {
-                              viewModel.toggleTaskCompletion(task);
-                            },
-                          );
-                        }, childCount: tasks.length),
-                      ),
-                    ],
-                  );
+                    ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final task = tasks[index];
+
+                        return TaskListItem(
+                          task: task,
+                          onTap: () {
+                            context.go(
+                              RouteNames.detailsPageScreen,
+                              extra: task,
+                            );
+                          },
+                          onCheckboxChanged: (value) {
+                            viewModel.toggleTaskCompletion(task);
+                          },
+                        );
+                      }, childCount: tasks.length),
+                    ),
+                  ],
+                );
           },
         ),
         floatingActionButton: FloatingActionButton(
