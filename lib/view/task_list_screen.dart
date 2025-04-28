@@ -26,6 +26,7 @@ class TaskListScreen extends StatelessWidget {
                 NotificationRepository(NotificationService()),
               )..initialize(),
         ),
+    
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -33,7 +34,7 @@ class TaskListScreen extends StatelessWidget {
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               final loginViewModel = Provider.of<LoginViewModel>(
-                context,listen: false,);
+                context, listen: false,);
               await loginViewModel.logout();
 
                 if (context.mounted) {

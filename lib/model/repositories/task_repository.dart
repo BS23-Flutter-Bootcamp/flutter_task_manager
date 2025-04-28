@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/services/database_service.dart';
 import 'package:flutter_task_manager/model/services/firestore_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_task_manager/model/repositories/notification_repository.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class TaskRepository {
   TaskRepository({
@@ -22,85 +19,8 @@ class TaskRepository {
   final DatabaseService _databaseService;
   final FirestoreService _firestoreService;
   final NotificationRepository _notificationRepository;
-  final FlutterLocalNotificationsPlugin notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
   String? get _currentUserEmail => FirebaseAuth.instance.currentUser?.email;
-
-  Future<bool> _canScheduleExactAlarms() async {
-    try {
-      final status = await Permission.scheduleExactAlarm.status;
-      if (kDebugMode) {
-        print('Schedule exact alarm permission: $status');
-      }
-      return status.isGranted;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error checking exact alarm permission: $e');
-      }
-      return false;
-    }
-  }
-
-  Future<void> _scheduleTaskNotifications(TaskEntity task) async {
-    if (task.dueDate == null || task.isCompleted) {
-      if (kDebugMode && task.isCompleted) {
-        if (kDebugMode) {
-          print('Skipping notifications for completed task: ${task.id}');
-        }
-      }
-      return;
-    }
-
-    try {
-      final scheduledMinutes = task.dueDate!.subtract(Duration(minutes: 59));
-      // Check exact alarm permission
-      final canUseExact = await _canScheduleExactAlarms();
-
-      // Schedule 59-minute reminder
-      if (scheduledMinutes.isAfter(DateTime.now())) {
-        if (kDebugMode) {
-          print(
-            'Scheduling 59-min reminder for task ${task.id} at $scheduledMinutes',
-          );
-        }
-        await _notificationRepository.scheduleNotification(
-          id: task.id!,
-          title: 'Task Reminder',
-          body: 'Task "${task.title}" is due in 59 minutes!',
-          eventDate: DateTime(
-            scheduledMinutes.year,
-            scheduledMinutes.month,
-            scheduledMinutes.day,
-          ),
-          eventTime: TimeOfDay(
-            hour: scheduledMinutes.hour,
-            minute: scheduledMinutes.minute,
-          ),
-          payload: {'taskId': task.id},
-          dateTimeComponents: canUseExact ? null : DateTimeComponents.time,
-        );
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Failed to schedule notifications for task ${task.id}: $e');
-      }
-      // Continue task operation despite notification failure
-    }
-  }
-
-  Future<void> _cancelTaskNotifications(int taskId) async {
-    if (kDebugMode) {
-      print('Canceling notifications for task: $taskId');
-    }
-    try {
-      await notificationsPlugin.cancel(taskId);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Failed to cancel notifications for task $taskId: $e');
-      }
-    }
-  }
 
   Future<int> addTask(TaskEntity task) async {
     try {
@@ -133,7 +53,7 @@ class TaskRepository {
       );
 
       // Schedule notifications for incomplete tasks
-      await _scheduleTaskNotifications(taskWithId);
+      await _notificationRepository.scheduleTaskNotifications(taskWithId);
       // Sync to Firestore if online
       final connectivityResult = await Connectivity().checkConnectivity();
       if (!connectivityResult.contains(ConnectivityResult.none)) {
@@ -177,15 +97,15 @@ class TaskRepository {
       );
       // Cancel existing notifications
       if (task.id != null) {
-        await _cancelTaskNotifications(task.id!);
+        await _notificationRepository.cancelTaskNotifications(task.id!);
       }
       // Schedule new notifications if task is incomplete
       await _notificationRepository.scheduleTestNotification(
         id: task.id!,
         title: 'Task Reminder',
-        body: 'Task "${task.title}" is due in 59 minutes!',
+        body: 'Task "${task.title}" is due in 2 minutes!',
       );
-      await _scheduleTaskNotifications(updatedTask);
+      await _notificationRepository.scheduleTaskNotifications(updatedTask);
       // Update SQLite
       await _databaseService.updateTask(updatedTask);
       // Sync to Firestore if online
@@ -210,7 +130,7 @@ class TaskRepository {
     try {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
       // Cancel notifications
-      await _cancelTaskNotifications(id);
+      await _notificationRepository.cancelTaskNotifications(id);
       // Delete from SQLite
       await _databaseService.deleteTask(id);
       // Delete from Firestore if online
@@ -302,13 +222,13 @@ class TaskRepository {
           if (existingTask == null) {
             await _databaseService.insertTask(remoteTask);
             if (!remoteTask.isCompleted) {
-              await _scheduleTaskNotifications(remoteTask);
+              await _notificationRepository.scheduleTaskNotifications(remoteTask);
             }
           } else {
             await _databaseService.updateTask(remoteTask);
-            await _cancelTaskNotifications(remoteTask.id!);
+            await _notificationRepository.cancelTaskNotifications(remoteTask.id!);
             if (!remoteTask.isCompleted) {
-              await _scheduleTaskNotifications(remoteTask);
+              await _notificationRepository.scheduleTaskNotifications(remoteTask);
             }
           }
         }

@@ -30,18 +30,15 @@ class _SplashScreenState extends State<SplashScreen> {
       final currentUser = _loginService.currentUser;
 
       if (currentUser != null && isRemembered) {
-        // User is logged in and remembered
         if (mounted) {
           context.go(RouteNames.taskListScreen);
         }
       } else {
-        // No user or not remembered
         if (mounted) {
           context.go(RouteNames.signUpScreen);
         }
       }
     } catch (e) {
-      // Handle any errors by defaulting to sign up screen
       if (mounted) {
         context.go(RouteNames.signUpScreen);
       }

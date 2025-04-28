@@ -39,7 +39,6 @@ class NotificationService {
   
   Future<void> _requestPermissions() async {
     try {
-      // First request notification permission
       final notificationStatus = await Permission.notification.request();
       debugPrint('Notification permission status: $notificationStatus');
 
@@ -48,8 +47,7 @@ class NotificationService {
         _showPermissionDialog('Notification');
         return;
       }
-
-      // Then request alarm permission
+      
       final alarmStatus = await Permission.scheduleExactAlarm.request();
       debugPrint('Exact alarm permission status: $alarmStatus');
 
@@ -182,6 +180,21 @@ class NotificationService {
       payload: payload,
       matchDateTimeComponents: dateTimeComponents,
     );
+  }
+
+   Future<bool> canScheduleExactAlarms() async {
+    try {
+      final status = await Permission.scheduleExactAlarm.status;
+      if (kDebugMode) {
+        print('Schedule exact alarm permission: $status');
+      }
+      return status.isGranted;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error checking exact alarm permission: $e');
+      }
+      return false;
+    }
   }
 
   
