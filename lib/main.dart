@@ -13,6 +13,16 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      theme: ThemeData(
+        primaryColor: Colors.deepPurple[200],
+        hintColor: Colors.blueGrey,
+        scaffoldBackgroundColor: Colors.deepPurple[50],
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.deepPurple[400]),
+          bodyMedium: TextStyle(color: Colors.deepPurple[200]),
+        ),
+        appBarTheme: AppBarTheme(color: Colors.deepPurple[400]),
+      ),
     );
   }
 }
