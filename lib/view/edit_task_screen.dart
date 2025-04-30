@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
+import 'package:flutter_task_manager/view/widgets/toast_snackbar.dart';
 import 'package:flutter_task_manager/viewmodel/edit_task_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     super.initState();
     // Initialize controllers with widget.task values to avoid Provider access in initState
     _titleController = TextEditingController(text: widget.task?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.task?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.task?.description ?? '',
+    );
   }
 
   @override
@@ -55,7 +58,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         backgroundColor: theme.scaffoldBackgroundColor,
         body: Builder(
           builder: (BuildContext providerContext) {
-            final viewModel = Provider.of<EditTaskViewModel>(providerContext, listen: false);
+            final viewModel = Provider.of<EditTaskViewModel>(
+              providerContext,
+              listen: false,
+            );
             return ListenableBuilder(
               listenable: viewModel,
               builder: (context, child) {
@@ -66,7 +72,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 if (_titleController.text != viewModel.title) {
                   _titleController.text = viewModel.title;
                 }
-                if (_descriptionController.text != (viewModel.description ?? '')) {
+                if (_descriptionController.text !=
+                    (viewModel.description ?? '')) {
                   _descriptionController.text = viewModel.description ?? '';
                 }
                 return Center(
@@ -122,7 +129,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                               onTap: () async {
                                 final selectedDate = await showDatePicker(
                                   context: context,
-                                  initialDate: viewModel.dueDate ?? DateTime.now(),
+                                  initialDate:
+                                      viewModel.dueDate ?? DateTime.now(),
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),
                                 );
@@ -154,31 +162,40 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                               children: [
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed: viewModel.isLoading || viewModel.title.isEmpty
-                                        ? null
-                                        : () async {
-                                            final success = await viewModel.updateTask();
-                                            if (success && context.mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('Task updated successfully!'),
-                                                  backgroundColor: Colors.green,
-                                                ),
-                                              );
-                                              context.go(RouteNames.taskListScreen);
-                                            } else if (context.mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(viewModel.errorMessage ?? 'Failed to update task'),
-                                                  backgroundColor: Colors.red,
-                                                ),
-                                              );
-                                            }
-                                          },
+                                    onPressed:
+                                        viewModel.isLoading ||
+                                                viewModel.title.isEmpty
+                                            ? null
+                                            : () async {
+                                              final success =
+                                                  await viewModel.updateTask();
+                                              if (success && context.mounted) {
+                                                ToastSnackbar.show(
+                                                  context: context,
+                                                  message:
+                                                      'Task updated successfully!',
+                                                  color: Colors.green[300]!,
+                                                );
+                                                context.go(
+                                                  RouteNames.taskListScreen,
+                                                );
+                                              } else if (context.mounted) {
+                                                ToastSnackbar.show(
+                                                  context: context,
+                                                  message:
+                                                      viewModel.errorMessage ??
+                                                      'Failed to update task',
+                                                  color: Colors.red[300]!,
+                                                );
+                                              }
+                                            },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: viewModel.title.isEmpty
-                                          ? theme.primaryColor.withAlpha(128)
-                                          : theme.primaryColor,
+                                      backgroundColor:
+                                          viewModel.title.isEmpty
+                                              ? theme.primaryColor.withAlpha(
+                                                128,
+                                              )
+                                              : theme.primaryColor,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(30),
                                       ),
@@ -187,48 +204,55 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                         vertical: 12,
                                       ),
                                     ),
-                                    child: viewModel.isLoading
-                                        ? const SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
+                                    child:
+                                        viewModel.isLoading
+                                            ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                            : Text(
+                                              'UPDATE TASK',
+                                              style: theme.textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                  ),
                                             ),
-                                          )
-                                        : Text(
-                                            'UPDATE TASK',
-                                            style: theme.textTheme.bodyMedium?.copyWith(
-                                              fontSize: 16,
-                                              color: Colors.white,
-                                            ),
-                                          ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed: viewModel.isLoading
-                                        ? null
-                                        : () async {
-                                            final success = await viewModel.deleteTask();
-                                            if (success && context.mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('Task deleted successfully!'),
-                                                  backgroundColor: Colors.green,
-                                                ),
-                                              );
-                                              context.go(RouteNames.taskListScreen);
-                                            } else if (context.mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(viewModel.errorMessage ?? 'Failed to delete task'),
-                                                  backgroundColor: Colors.red,
-                                                ),
-                                              );
-                                            }
-                                          },
+                                    onPressed:
+                                        viewModel.isLoading
+                                            ? null
+                                            : () async {
+                                              final success =
+                                                  await viewModel.deleteTask();
+                                              if (success && context.mounted) {
+                                                ToastSnackbar.show(
+                                                  context: context,
+                                                  message:
+                                                      'Task deleted successfully!',
+                                                  color: Colors.green[200]!,
+                                                );
+                                                context.go(
+                                                  RouteNames.taskListScreen,
+                                                );
+                                              } else if (context.mounted) {
+                                                ToastSnackbar.show(
+                                                  context: context,
+                                                  message:
+                                                      viewModel.errorMessage ??
+                                                      'Failed to delete task',
+                                                  color: Colors.red[200]!,
+                                                );
+                                              }
+                                            },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       shape: RoundedRectangleBorder(
@@ -239,22 +263,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                         vertical: 12,
                                       ),
                                     ),
-                                    child: viewModel.isLoading
-                                        ? const SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
+                                    child:
+                                        viewModel.isLoading
+                                            ? const SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            )
+                                            : Text(
+                                              'DELETE TASK',
+                                              style: theme.textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                    fontSize: 14,
+                                                    color: Colors.white,
+                                                  ),
                                             ),
-                                          )
-                                        : Text(
-                                            'DELETE TASK',
-                                            style: theme.textTheme.bodyMedium?.copyWith(
-                                              fontSize: 16,
-                                              color: Colors.white,
-                                            ),
-                                          ),
                                   ),
                                 ),
                               ],
