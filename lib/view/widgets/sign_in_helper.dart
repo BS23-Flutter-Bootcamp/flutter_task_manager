@@ -30,12 +30,12 @@ class SignInHelper {
 
   static void handleGoogleSignIn(BuildContext context) {
 
-    ToastSnackbar.show(context: context, message: 'Google Sign In not implemented', color: Colors.red[300]!);;
+    ToastSnackbar.show(context: context, message: 'Google Sign In not implemented', color: Colors.red[300]!);
   }
 
   static void handleFacebookSignIn(BuildContext context) {
 
-    ToastSnackbar.show(context: context, message: 'Facebook Sign In not implemented', color: Colors.red[300]!);;
+    ToastSnackbar.show(context: context, message: 'Facebook Sign In not implemented', color: Colors.red[300]!);
   }
 
   static void handleAppleSignIn(BuildContext context) {

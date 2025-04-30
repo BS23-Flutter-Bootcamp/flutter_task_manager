@@ -10,7 +10,6 @@ class AddTaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return ChangeNotifierProvider(
       create: (_) => AddTaskViewModel(),
       child: Scaffold(
@@ -21,13 +20,13 @@ class AddTaskScreen extends StatelessWidget {
           ),
           title: Text(
             'Add Task',
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: theme.appBarTheme.foregroundColor,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Theme.of(context).appBarTheme.foregroundColor,
             ),
           ),
           centerTitle: true,
         ),
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Builder(
           builder: (BuildContext providerContext) {
             final viewModel = Provider.of<AddTaskViewModel>(
@@ -51,7 +50,7 @@ class AddTaskScreen extends StatelessWidget {
                           children: [
                             Text(
                               'New Task',
-                              style: theme.textTheme.bodyLarge?.copyWith(
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -61,7 +60,7 @@ class AddTaskScreen extends StatelessWidget {
                               onChanged: viewModel.setTitle,
                               decoration: InputDecoration(
                                 labelText: 'Title *',
-                                labelStyle: TextStyle(color: theme.hintColor),
+                                labelStyle: TextStyle(color: Theme.of(context).hintColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -74,7 +73,7 @@ class AddTaskScreen extends StatelessWidget {
                               onChanged: viewModel.setDescription,
                               decoration: InputDecoration(
                                 labelText: 'Description',
-                                labelStyle: TextStyle(color: theme.hintColor),
+                                labelStyle: TextStyle(color: Theme.of(context).hintColor),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -99,7 +98,7 @@ class AddTaskScreen extends StatelessWidget {
                               child: InputDecorator(
                                 decoration: InputDecoration(
                                   labelText: 'Due Date',
-                                  labelStyle: TextStyle(color: theme.hintColor),
+                                  labelStyle: TextStyle(color: Theme.of(context).hintColor),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -108,7 +107,7 @@ class AddTaskScreen extends StatelessWidget {
                                 ),
                                 child: Text(
                                   '${viewModel.dueDate.day}/${viewModel.dueDate.month}/${viewModel.dueDate.year}',
-                                  style: theme.textTheme.bodyMedium,
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ),
                             ),
@@ -140,8 +139,8 @@ class AddTaskScreen extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     viewModel.title.isEmpty
-                                        ? theme.primaryColor.withAlpha(128)
-                                        : theme.primaryColor,
+                                        ? Theme.of(context).primaryColor.withAlpha(128)
+                                        : Theme.of(context).primaryColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
@@ -162,7 +161,7 @@ class AddTaskScreen extends StatelessWidget {
                                       )
                                       : Text(
                                         'ADD TASK',
-                                        style: theme.textTheme.bodyMedium
+                                        style: Theme.of(context).textTheme.bodyMedium
                                             ?.copyWith(
                                               fontSize: 16,
                                               color: Colors.white,
@@ -173,7 +172,7 @@ class AddTaskScreen extends StatelessWidget {
                             if (viewModel.errorMessage != null)
                               Text(
                                 viewModel.errorMessage!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.red,
                                 ),
                               ),
