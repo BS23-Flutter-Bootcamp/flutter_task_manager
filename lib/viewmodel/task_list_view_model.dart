@@ -4,7 +4,7 @@ import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 
 class TaskListViewModel extends ChangeNotifier {
   TaskListViewModel({TaskRepository? repository})
-      : _repository = repository ?? TaskRepository();
+    : _repository = repository ?? TaskRepository();
 
   final TaskRepository _repository;
 
@@ -22,14 +22,12 @@ class TaskListViewModel extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      // Sync only if explicitly requested and online
       if (sync) {
         await _repository.syncTasks();
       }
 
       // Always fetch from local SQLite
       _tasks = await _repository.getTasks();
-
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -47,11 +45,10 @@ class TaskListViewModel extends ChangeNotifier {
     }
   }
 
-  /// Toggle the completion status of a task
   Future<void> toggleTaskCompletion(TaskEntity task) async {
     try {
       final updatedTask = TaskEntity(
-        id: task.id ?? 0, // Provide a default value if task.id is null
+        id: task.id ?? 0,
         title: task.title,
         description: task.description,
         dueDate: task.dueDate,
@@ -67,4 +64,4 @@ class TaskListViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
- }
+}

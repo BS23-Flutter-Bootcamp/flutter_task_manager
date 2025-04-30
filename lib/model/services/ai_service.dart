@@ -18,7 +18,9 @@ class AIService {
     try {
       final currentDate = DateTime.now();
       final prompt = '''
-Given the following user request: "$userPrompt", create a to-do task plan with 3–5 tasks related to the request. Each task must have:
+Given the following user request: "$userPrompt",Generate a to-do plan based on the request. If no days are specified, create 3–5 relevant tasks.
+ If days are provided, distribute tasks accordingly.
+  Each task must have:
 - A title (short, descriptive, max 50 characters).
 - A description (1–2 sentences detailing the task).
 - A due date (in ISO 8601 format, e.g., "2025-05-01T14:00:00", within the next 7 days from today, ${currentDate.toIso8601String()}).

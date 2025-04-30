@@ -34,4 +34,15 @@ class AppConstants {
   static const String errorDatabaseUpdate = 'Failed to update task';
   static const String errorDatabaseDelete = 'Failed to delete task';
   static const String errorDatabaseClose = 'Failed to close database';
+  static const String errorDatabaseSync = 'Offline mode: Sync unavailable';
+  static const String errorLogout = 'Failed to log out. Please try again.';
+  static const String errorLogin = 'Failed to login. Please try again.' ;
+  static const String taskListTitle = 'Task List';
+  static const String successSync = 'Tasks synced successfully';
+  static const String errorSync = 'Failed to sync tasks. Please try again.';
+  static const String syncTasksTooltip = 'Sync tasks with server';
+  static const String noTasks = 'No tasks added yet';
+  static const String generateTaskPlanTooltip = 'Generate a task plan';
+
+
 }
