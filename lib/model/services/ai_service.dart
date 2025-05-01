@@ -9,17 +9,17 @@ class AIService {
   final GenerativeModel _model;
 
   AIService()
-      : _model = GenerativeModel(
-          model: 'gemini-1.5-flash',
-          apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
-        );
+    : _model = GenerativeModel(
+        model: 'gemini-1.5-flash',
+        apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
+      );
 
   Future<List<TaskEntity>> generateTaskPlan(String userPrompt) async {
     try {
       final currentDate = DateTime.now();
       final prompt = '''
-Given the following user request: "$userPrompt",Generate a to-do plan based on the request. If no days are specified, create 3–5 relevant tasks.
- If days are provided, distribute tasks accordingly.
+Given the following user request: "$userPrompt",Generate a to-do plan based on the request. If no days are specified, 
+create 3–5 relevant tasks. If days are provided, distribute tasks accordingly.
   Each task must have:
 - A title (short, descriptive, max 50 characters).
 - A description (1–2 sentences detailing the task).
@@ -49,7 +49,8 @@ Ensure due dates are realistic, spread across the next 7 days, and in local time
         cleanedResponse = cleanedResponse.replaceFirst('```json', '').trim();
       }
       if (cleanedResponse.endsWith('```')) {
-        cleanedResponse = cleanedResponse.replaceAll(RegExp(r'```$'), '').trim();
+        cleanedResponse =
+            cleanedResponse.replaceAll(RegExp(r'```$'), '').trim();
       }
 
       // Parse JSON response
@@ -64,50 +65,43 @@ Ensure due dates are realistic, spread across the next 7 days, and in local time
       }
 
       // Convert to TaskEntity objects
-      final tasks = jsonResponse.map((task) {
-        if (task is! Map<String, dynamic>) {
-          throw Exception('Invalid task format: Expected JSON object');
-        }
+      final tasks =
+          jsonResponse.map((task) {
+            if (task is! Map<String, dynamic>) {
+              throw Exception('Invalid task format: Expected JSON object');
+            }
 
-        final title = task['title']?.toString();
-        final description = task['description']?.toString();
-        final dueDateStr = task['dueDate']?.toString();
+            final title = task['title']?.toString();
+            final description = task['description']?.toString();
+            final dueDateStr = task['dueDate']?.toString();
 
-        if (title == null || title.isEmpty) {
-          throw Exception('Missing or invalid title');
-        }
+            if (title == null || title.isEmpty) {
+              throw Exception('Missing or invalid title');
+            }
 
-        DateTime? dueDate;
-        try {
-          dueDate = dueDateStr != null ? DateTime.parse(dueDateStr) : null;
-          if (dueDate != null && dueDate.isBefore(currentDate)) {
-            throw Exception('Due date is in the past: $dueDateStr');
-          }
-        } catch (e) {
-          throw Exception('Invalid due date format: $dueDateStr');
-        }
+            DateTime? dueDate;
+            try {
+              dueDate = dueDateStr != null ? DateTime.parse(dueDateStr) : null;
+              if (dueDate != null && dueDate.isBefore(currentDate)) {
+                throw Exception('Due date is in the past: $dueDateStr');
+              }
+            } catch (e) {
+              throw Exception('Invalid due date format: $dueDateStr');
+            }
 
-        return TaskEntity(
-          id: null,
-          title: title,
-          description: description,
-          dueDate: dueDate,
-          isCompleted: false,
-          lastSyncTime: currentDate,
-          email: userEmail,
-        );
-      }).toList();
-
-      if (tasks.length < 3 || tasks.length > 5) {
-        throw Exception('Invalid task count: ${tasks.length} (expected 3–5)');
-      }
+            return TaskEntity(
+              id: null,
+              title: title,
+              description: description,
+              dueDate: dueDate,
+              isCompleted: false,
+              lastSyncTime: currentDate,
+              email: userEmail,
+            );
+          }).toList();
 
       return tasks;
     } catch (e) {
-      if (kDebugMode) {
-        print('AI Service Error: $e');
-      
-      }
       rethrow;
     }
   }

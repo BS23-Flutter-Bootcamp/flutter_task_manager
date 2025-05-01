@@ -16,7 +16,6 @@ class TaskListViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  /// Fetch tasks from the local database and optionally sync with the server
   Future<void> fetchTasks({bool sync = false}) async {
     try {
       _isLoading = true;

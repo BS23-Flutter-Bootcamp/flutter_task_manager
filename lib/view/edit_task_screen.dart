@@ -22,7 +22,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with widget.task values to avoid Provider access in initState
     _titleController = TextEditingController(text: widget.task?.title ?? '');
     _descriptionController = TextEditingController(
       text: widget.task?.description ?? '',
@@ -249,7 +248,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                                   message:
                                                       viewModel.errorMessage ??
                                                       'Failed to delete task',
-                                                  color: Colors.red[200]!,
+                                                  color: Colors.red,
                                                 );
                                               }
                                             },
