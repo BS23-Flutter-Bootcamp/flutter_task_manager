@@ -73,35 +73,6 @@ class DatabaseService {
     return result.isNotEmpty;
   }
 
-  Future<void> dropTable() async {
-    try {
-      final db = await database;
-      if (kDebugMode) {
-        print('Dropping table: ${AppConstants.tableName}');
-      }
-      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableName}');
-      if (kDebugMode) {
-        print('Recreating table: ${AppConstants.tableName}');
-      }
-      await db.execute('''
-        CREATE TABLE ${AppConstants.tableName} (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT NOT NULL,
-          description TEXT,
-          dueDate TEXT,
-          isCompleted INTEGER NOT NULL,
-          lastSyncTime TEXT,
-          email TEXT NOT NULL
-        )
-      ''');
-    } catch (e) {
-      if (kDebugMode) {
-        print('Drop Table Error: $e');
-      }
-      rethrow;
-    }
-  }
-
   Future<int> insertTask(TaskEntity task) async {
     try {
       final db = await database;
