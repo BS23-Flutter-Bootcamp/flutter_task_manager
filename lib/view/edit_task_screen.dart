@@ -238,7 +238,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                                   context: context,
                                                   message:
                                                       'Task deleted successfully!',
-                                                  color: Colors.green[200]!,
+                                                  color: Colors.green[300]!,
                                                 );
                                                 context.go(
                                                   RouteNames.taskListScreen,

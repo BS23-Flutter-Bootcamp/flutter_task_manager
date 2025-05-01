@@ -57,14 +57,7 @@ class TaskRepository {
       // Sync to Firestore if online
       final connectivityResult = await Connectivity().checkConnectivity();
       if (!connectivityResult.contains(ConnectivityResult.none)) {
-        await _firestoreService
-            .upsertTask(taskWithId, _currentUserEmail!)
-            .timeout(
-              const Duration(seconds: 10),
-              onTimeout: () {
-                throw Exception('Firestore sync timed out');
-              },
-            );
+        await _firestoreService.upsertTask(taskWithId, _currentUserEmail!);
       }
       return taskId;
     } catch (e) {
@@ -111,14 +104,7 @@ class TaskRepository {
       // Sync to Firestore if online
       final connectivityResult = await Connectivity().checkConnectivity();
       if (!connectivityResult.contains(ConnectivityResult.none)) {
-        await _firestoreService
-            .upsertTask(updatedTask, _currentUserEmail!)
-            .timeout(
-              const Duration(seconds: 10),
-              onTimeout: () {
-                throw Exception('Firestore sync timed out');
-              },
-            );
+        await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
       }
     } catch (e) {
       if (kDebugMode) print('Update Task Error: $e');
@@ -136,14 +122,7 @@ class TaskRepository {
       // Delete from Firestore if online
       final connectivityResult = await Connectivity().checkConnectivity();
       if (!connectivityResult.contains(ConnectivityResult.none)) {
-        await _firestoreService
-            .deleteTask(id, _currentUserEmail!)
-            .timeout(
-              const Duration(seconds: 10),
-              onTimeout: () {
-                throw Exception('Firestore delete timed out');
-              },
-            );
+        await _firestoreService.deleteTask(id, _currentUserEmail!);
       }
     } catch (e) {
       if (kDebugMode) print('Delete Task Error: $e');
@@ -164,14 +143,7 @@ class TaskRepository {
       final localTasks = await _databaseService.getTasksByEmail(
         _currentUserEmail!,
       );
-      final remoteTasks = await _firestoreService
-          .getTasks(_currentUserEmail!)
-          .timeout(
-            const Duration(seconds: 10),
-            onTimeout: () {
-              throw Exception('Firestore fetch timed out');
-            },
-          );
+      final remoteTasks = await _firestoreService.getTasks(_currentUserEmail!);
 
       // Sync local to remote
       for (final localTask in localTasks) {
@@ -222,13 +194,19 @@ class TaskRepository {
           if (existingTask == null) {
             await _databaseService.insertTask(remoteTask);
             if (!remoteTask.isCompleted) {
-              await _notificationRepository.scheduleTaskNotifications(remoteTask);
+              await _notificationRepository.scheduleTaskNotifications(
+                remoteTask,
+              );
             }
           } else {
             await _databaseService.updateTask(remoteTask);
-            await _notificationRepository.cancelTaskNotifications(remoteTask.id!);
+            await _notificationRepository.cancelTaskNotifications(
+              remoteTask.id!,
+            );
             if (!remoteTask.isCompleted) {
-              await _notificationRepository.scheduleTaskNotifications(remoteTask);
+              await _notificationRepository.scheduleTaskNotifications(
+                remoteTask,
+              );
             }
           }
         }
@@ -237,14 +215,10 @@ class TaskRepository {
       // Delete remote tasks not in local
       for (final remoteTask in remoteTasks) {
         if (!localTasks.any((lt) => lt.id == remoteTask.id)) {
-          await _firestoreService
-              .deleteTask(remoteTask.id!, _currentUserEmail!)
-              .timeout(
-                const Duration(seconds: 10),
-                onTimeout: () {
-                  throw Exception('Firestore delete timed out');
-                },
-              );
+          await _firestoreService.deleteTask(
+            remoteTask.id!,
+            _currentUserEmail!,
+          );
         }
       }
     } catch (e) {

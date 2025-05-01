@@ -62,7 +62,7 @@ class HomeAppBar {
                     ToastSnackbar.show(
                       context: context,
                       message: 'Offline mode: Sync unavailable',
-                      color: Colors.orange[300]??Colors.orange,
+                      color: Colors.orange[300]!,
                     );
                   }
                   return;
@@ -73,7 +73,7 @@ class HomeAppBar {
                     ToastSnackbar.show(
                      context:  context,
                      message:  'Tasks synced successfully!',
-                      color: Colors.green[300]??Colors.green ,
+                      color: Colors.green[300]!,
                     );
                    
                   }
@@ -82,7 +82,7 @@ class HomeAppBar {
                     ToastSnackbar.show(
                       context: context,
                       message: 'Sync failed. Please try again.',
-                      color: Colors.red[300]??Colors.red,
+                      color: Colors.red[300]!,
                     );
                   }
                 }
