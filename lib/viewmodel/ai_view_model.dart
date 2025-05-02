@@ -13,13 +13,15 @@ class AiViewModel extends ChangeNotifier {
 
   String _prompt = '';
   List<TaskEntity> _generatedTasks = [];
-  bool _isLoading = false;
+  bool _isGenerating = false;
+  bool _isSaving = false;
   String? _errorMessage;
 
   String get prompt => _prompt;
   List<TaskEntity> get generatedTasks => _generatedTasks;
-  bool get isLoading => _isLoading;
+  bool get isGenerating => _isGenerating;
   String? get errorMessage => _errorMessage;
+  bool get isSaving => _isSaving;
 
   void setPrompt(String value) {
     _prompt = value;
@@ -42,14 +44,14 @@ class AiViewModel extends ChangeNotifier {
     }
 
     try {
-      _isLoading = true;
+      _isGenerating = true;
       _errorMessage = null;
       notifyListeners();
       _generatedTasks = await _aiRepository.generateTaskPlan(_prompt);
-      _isLoading = false;
+      _isGenerating = false;
       notifyListeners();
     } catch (e) {
-      _isLoading = false;
+      _isGenerating = false;
       _errorMessage = 'Failed to generate tasks: $e';
       notifyListeners();
     }
@@ -63,7 +65,7 @@ class AiViewModel extends ChangeNotifier {
     }
 
     try {
-      _isLoading = true;
+      _isSaving = true;
       _errorMessage = null;
       notifyListeners();
 
@@ -73,10 +75,10 @@ class AiViewModel extends ChangeNotifier {
       }
       _generatedTasks = [];
       _prompt = '';
-      _isLoading = false;
+      _isSaving = false;
       notifyListeners();
     } catch (e) {
-      _isLoading = false;
+      _isSaving = false;
       _errorMessage = 'Failed to save tasks: $e';
       notifyListeners();
     }

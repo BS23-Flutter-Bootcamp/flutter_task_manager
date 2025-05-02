@@ -57,12 +57,16 @@ class AiScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed:
-                        viewModel.isLoading
+                        viewModel.isGenerating
                             ? null
                             : () => viewModel.generateTasks(),
                     child:
-                        viewModel.isLoading
-                            ? const CircularProgressIndicator()
+                        viewModel.isGenerating
+                            ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: const CircularProgressIndicator(),
+                            )
                             : const Text('Generate Tasks'),
                   ),
                   if (viewModel.errorMessage != null &&
@@ -96,7 +100,7 @@ class AiScreen extends StatelessWidget {
                   if (viewModel.generatedTasks.isNotEmpty)
                     ElevatedButton(
                       onPressed:
-                          viewModel.isLoading
+                          viewModel.isSaving
                               ? null
                               : () async {
                                 await viewModel.saveTasks();
@@ -105,8 +109,8 @@ class AiScreen extends StatelessWidget {
                                 }
                               },
                       child:
-                          viewModel.isLoading
-                              ? const CircularProgressIndicator()
+                          viewModel.isSaving
+                              ? SizedBox(height: 20,width: 20,child: const CircularProgressIndicator(),)
                               : const Text('Save Tasks'),
                     ),
                 ],
