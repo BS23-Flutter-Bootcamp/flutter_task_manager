@@ -72,9 +72,6 @@ class AiViewModel extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       _errorMessage = 'Failed to save tasks: $e';
-      if (kDebugMode) {
-        print('Save Tasks Error: $e');
-      }
       notifyListeners();
     }
   }

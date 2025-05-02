@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/constants/app_constants.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:sqflite/sqflite.dart';
@@ -20,12 +19,10 @@ class DatabaseService {
   Future<Database> _initDatabase() async {
     try {
       final String path = join(await getDatabasesPath(), AppConstants.databaseName);
-      if (kDebugMode) print('Initializing database at path: $path');
       return await openDatabase(
         path,
         version: AppConstants.version,
         onCreate: (db, version) async {
-          if (kDebugMode) print('Creating table: ${AppConstants.tableName}');
           await db.execute('''
             CREATE TABLE ${AppConstants.tableName} (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,13 +38,11 @@ class DatabaseService {
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            if (kDebugMode) print('Adding isDeleted column');
             await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0');
           }
         },
       );
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -64,7 +59,6 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, recreating...');
         await db.execute('''
           CREATE TABLE ${AppConstants.tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,14 +72,12 @@ class DatabaseService {
           )
         ''');
       }
-      if (kDebugMode) print('Inserting task: ${task.toMap()}');
       return await db.insert(
         AppConstants.tableName,
         task.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -94,13 +86,11 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, returning empty list');
         return [];
       }
       final List<Map<String, dynamic>> maps = await db.query(AppConstants.tableName);
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -109,7 +99,6 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, returning empty list');
         return [];
       }
       final List<Map<String, dynamic>> maps = await db.query(
@@ -119,7 +108,7 @@ class DatabaseService {
       );
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
+
       rethrow;
     }
   }
@@ -128,7 +117,6 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, recreating...');
         await db.execute('''
           CREATE TABLE ${AppConstants.tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -149,7 +137,6 @@ class DatabaseService {
         whereArgs: [task.id],
       );
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -158,12 +145,10 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, skipping delete');
         return;
       }
       await db.delete(AppConstants.tableName, where: 'id = ?', whereArgs: [id]);
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -172,7 +157,6 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, skipping delete');
         return;
       }
       await db.delete(
@@ -181,7 +165,6 @@ class DatabaseService {
         whereArgs: [isDeleted ? 1 : 0],
       );
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -190,7 +173,6 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, returning null');
         return null;
       }
       final maps = await db.query(
@@ -201,7 +183,7 @@ class DatabaseService {
       if (maps.isNotEmpty) return TaskEntity.fromMap(maps.first);
       return null;
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
+  
       rethrow;
     }
   }
@@ -212,7 +194,7 @@ class DatabaseService {
       await db.close();
       _database = null;
     } catch (e) {
-      if (kDebugMode) print('Database Error: $e');
+
       rethrow;
     }
   }

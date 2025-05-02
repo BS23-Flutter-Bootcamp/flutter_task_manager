@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/model/services/database_service.dart';
 import 'package:flutter_task_manager/model/services/firestore_service.dart';
@@ -130,7 +129,6 @@ class TaskRepository {
         }
       }
     } catch (e) {
-      if (kDebugMode) print('Delete Task Error: $e');
       rethrow;
     }
   }

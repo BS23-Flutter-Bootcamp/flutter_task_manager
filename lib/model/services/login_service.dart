@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart';
 
 class LoginService {
   static const String _rememberMeKey = 'remember_me';
@@ -16,13 +15,8 @@ class LoginService {
 
     try {
       _prefs = await SharedPreferences.getInstance();
-      if (kDebugMode) {
-        print('SharedPreferences initialized successfully');
-      }
     } catch (e) {
-      if (kDebugMode) {
-        print('Failed to initialize SharedPreferences: $e');
-      }
+      throw Exception('Failed to initialize SharedPreferences');
     }
   }
 
@@ -44,17 +38,11 @@ class LoginService {
           await init(); // Try to initialize if not already done
           await _prefs?.setBool(_rememberMeKey, rememberMe);
         } catch (e) {
-          // Log but don't fail the sign in
-          if (kDebugMode) {
-            print('Failed to save remember me preference: $e');
-          }
+          throw Exception('Failed to save remember me preference');
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Login error: $e');
-      }
-      rethrow; // Rethrow to allow UI to handle the error
+      throw Exception('Login failed');
     }
   }
 
@@ -63,9 +51,6 @@ class LoginService {
       await init(); // Try to initialize if not already done
       return _prefs?.getBool(_rememberMeKey) ?? false;
     } catch (e) {
-      if (kDebugMode) {
-        print('Error checking remember me status: $e');
-      }
       return false;
     }
   }
@@ -76,9 +61,7 @@ class LoginService {
       try {
         await _prefs?.setBool(_rememberMeKey, false);
       } catch (e) {
-        if (kDebugMode) {
-          print('Failed to clear remember me preference: $e');
-        }
+        throw Exception('Failed to clear remember me preference');
       }
     } catch (e) {
       throw Exception('Logout failed: $e');
@@ -94,10 +77,7 @@ class LoginService {
         await logOut();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Failed to check remember me status: $e');
-      }
+      throw Exception('Failed to check remember me status');
     }
   }
-
 }

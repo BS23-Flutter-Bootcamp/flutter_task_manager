@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 
 class FirestoreService {
@@ -25,9 +24,6 @@ class FirestoreService {
           .map((doc) => TaskEntity.fromFirestore(doc.data()))
           .toList();
     } catch (e) {
-      if (kDebugMode) {
-        print('Firestore Error: $e');
-      }
       rethrow;
     }
   }
@@ -43,9 +39,6 @@ class FirestoreService {
       if (doc.exists) return TaskEntity.fromFirestore(doc.data()!);
       return null;
     } catch (e) {
-      if (kDebugMode) {
-        print('Firestore Error: $e');
-      }
       rethrow;
     }
   }
@@ -59,9 +52,6 @@ class FirestoreService {
           .doc(id.toString())
           .delete();
     } catch (e) {
-      if (kDebugMode) {
-        print('Firestore Error: $e');
-      }
       rethrow;
     }
   }
