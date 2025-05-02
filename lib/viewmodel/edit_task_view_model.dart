@@ -14,7 +14,6 @@ class EditTaskViewModel extends ChangeNotifier {
   bool _isUpdating = false;
   bool _isDeleting = false;
 
-
   EditTaskViewModel({TaskRepository? repository, TaskEntity? task})
     : _repository = repository ?? TaskRepository(),
       _task = task {

@@ -15,11 +15,12 @@ class FirestoreService {
 
   Future<List<TaskEntity>> getTasks(String email) async {
     try {
-      final snapshot = await _firestore
-          .collection('users')
-          .doc(email)
-          .collection('tasks')
-          .get();
+      final snapshot =
+          await _firestore
+              .collection('users')
+              .doc(email)
+              .collection('tasks')
+              .get();
       return snapshot.docs
           .map((doc) => TaskEntity.fromFirestore(doc.data()))
           .toList();
@@ -30,12 +31,13 @@ class FirestoreService {
 
   Future<TaskEntity?> getTask(int id, String email) async {
     try {
-      final doc = await _firestore
-          .collection('users')
-          .doc(email)
-          .collection('tasks')
-          .doc(id.toString())
-          .get();
+      final doc =
+          await _firestore
+              .collection('users')
+              .doc(email)
+              .collection('tasks')
+              .doc(id.toString())
+              .get();
       if (doc.exists) return TaskEntity.fromFirestore(doc.data()!);
       return null;
     } catch (e) {

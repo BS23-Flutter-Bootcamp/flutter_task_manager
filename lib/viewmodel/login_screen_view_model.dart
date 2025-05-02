@@ -21,7 +21,6 @@ class LoginViewModel extends ChangeNotifier {
   String get email => _email;
   String get password => _password;
 
-
   bool get isFormValid =>
       _email.isNotEmpty &&
       _password.isNotEmpty &&
@@ -91,7 +90,11 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repository.login(email: _email, password: _password, rememberMe: _isRememberMeChecked);
+      await _repository.login(
+        email: _email,
+        password: _password,
+        rememberMe: _isRememberMeChecked,
+      );
       _isLoading = false;
       notifyListeners();
       return true;
@@ -134,6 +137,4 @@ class LoginViewModel extends ChangeNotifier {
       return 'Failed to log in. Please try again';
     }
   }
-
-  
 }

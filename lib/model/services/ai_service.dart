@@ -45,7 +45,6 @@ Ensure due dates are realistic, spread across the specified or default $defaultD
         throw Exception('No response from AI model');
       }
 
-      // Clean response to remove Markdown code blocks
       String cleanedResponse = response.text!.trim();
       if (cleanedResponse.startsWith('```json')) {
         cleanedResponse = cleanedResponse.replaceFirst('```json', '').trim();
@@ -55,7 +54,6 @@ Ensure due dates are realistic, spread across the specified or default $defaultD
             cleanedResponse.replaceAll(RegExp(r'```$'), '').trim();
       }
 
-      // Parse JSON response
       final jsonResponse = jsonDecode(cleanedResponse);
       if (jsonResponse is! List) {
         throw Exception('Invalid response format: Expected JSON array');
@@ -66,7 +64,6 @@ Ensure due dates are realistic, spread across the specified or default $defaultD
         throw Exception('User not authenticated');
       }
 
-      // Convert to TaskEntity objects
       final tasks =
           jsonResponse.map((task) {
             if (task is! Map<String, dynamic>) {

@@ -7,8 +7,6 @@ import 'package:flutter_task_manager/viewmodel/task_list_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-
-
 class TaskListScreen extends StatelessWidget {
   const TaskListScreen({super.key});
 
@@ -17,7 +15,7 @@ class TaskListScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => TaskListViewModel()..fetchTasks(),
       child: Scaffold(
-        appBar:  HomeAppBar.getAppBar(context),
+        appBar: HomeAppBar.getAppBar(context),
         body: Consumer<TaskListViewModel>(
           builder: (context, viewModel, child) {
             if (viewModel.isLoading) {
@@ -27,19 +25,19 @@ class TaskListScreen extends StatelessWidget {
             return tasks.isEmpty
                 ? const Center(child: Text('No tasks available'))
                 : ListView.builder(
-                    itemCount: tasks.length,
-                    itemBuilder: (context, index) {
-                      final task = tasks[index];
-                      return TaskListItem(
-                        task: task,
-                        onTap: () {
-                          context.go(RouteNames.detailsPageScreen, extra: task);
-                        },
-                        onCheckboxChanged: (value) =>
-                            viewModel.toggleTaskCompletion(task),
-                      );
-                    },
-                  );
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = tasks[index];
+                    return TaskListItem(
+                      task: task,
+                      onTap: () {
+                        context.go(RouteNames.detailsPageScreen, extra: task);
+                      },
+                      onCheckboxChanged:
+                          (value) => viewModel.toggleTaskCompletion(task),
+                    );
+                  },
+                );
           },
         ),
         bottomNavigationBar: HomeBottomNavigationBar.getBottomNavBar(context),

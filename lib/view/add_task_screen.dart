@@ -27,18 +27,15 @@ class AddTaskScreen extends StatelessWidget {
             ),
           ),
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
             onPressed: () => context.go(RouteNames.taskListScreen),
           ),
           title: Text(
             'Add Task',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           centerTitle: true,
         ),
@@ -58,10 +55,12 @@ class AddTaskScreen extends StatelessWidget {
                       children: [
                         Text(
                           'New Task',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         TextField(
@@ -127,29 +126,35 @@ class AddTaskScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: viewModel.isLoading || viewModel.title.isEmpty
-                              ? null
-                              : () async {
-                                  final success = await viewModel.addTask();
-                                  if (success && context.mounted) {
-                                    ToastSnackbar.show(
-                                      context: context,
-                                      message: 'Task added successfully',
-                                      color: Colors.green[300]!,
-                                    );
-                                    context.go(RouteNames.taskListScreen);
-                                  } else if (context.mounted) {
-                                    ToastSnackbar.show(
-                                      context: context,
-                                      message: viewModel.errorMessage ?? 'Failed to add task',
-                                      color: Colors.red[300]!,
-                                    );
-                                  }
-                                },
+                          onPressed:
+                              viewModel.isLoading || viewModel.title.isEmpty
+                                  ? null
+                                  : () async {
+                                    final success = await viewModel.addTask();
+                                    if (success && context.mounted) {
+                                      ToastSnackbar.show(
+                                        context: context,
+                                        message: 'Task added successfully',
+                                        color: Colors.green[300]!,
+                                      );
+                                      context.go(RouteNames.taskListScreen);
+                                    } else if (context.mounted) {
+                                      ToastSnackbar.show(
+                                        context: context,
+                                        message:
+                                            viewModel.errorMessage ??
+                                            'Failed to add task',
+                                        color: Colors.red[300]!,
+                                      );
+                                    }
+                                  },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: viewModel.title.isEmpty
-                                ? Theme.of(context).primaryColor.withAlpha(128)
-                                : Theme.of(context).primaryColor,
+                            backgroundColor:
+                                viewModel.title.isEmpty
+                                    ? Theme.of(
+                                      context,
+                                    ).primaryColor.withAlpha(128)
+                                    : Theme.of(context).primaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -158,28 +163,33 @@ class AddTaskScreen extends StatelessWidget {
                               vertical: 12,
                             ),
                           ),
-                          child: viewModel.isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                          child:
+                              viewModel.isLoading
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Text(
+                                    'ADD TASK',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium?.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  'ADD TASK',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                ),
                         ),
                         const SizedBox(height: 16),
                         if (viewModel.errorMessage != null)
                           Text(
                             viewModel.errorMessage!,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.red),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(color: Colors.red),
                           ),
                       ],
                     ),

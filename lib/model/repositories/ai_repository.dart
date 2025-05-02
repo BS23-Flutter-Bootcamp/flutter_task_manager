@@ -6,7 +6,6 @@ class AiRepository {
 
   AiRepository({AIService? aiService}) : _aiService = aiService ?? AIService();
 
-  /// Generates a task plan based on the user prompt
   Future<List<TaskEntity>> generateTaskPlan(String userPrompt) async {
     try {
       return await _aiService.generateTaskPlan(userPrompt);

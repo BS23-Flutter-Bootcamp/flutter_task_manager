@@ -26,16 +26,14 @@ class LoginService {
     required bool rememberMe,
   }) async {
     try {
-      // First attempt authentication
       final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // If authentication successful, try to save preference
       if (userCredential.user != null) {
         try {
-          await init(); // Try to initialize if not already done
+          await init(); 
           await _prefs?.setBool(_rememberMeKey, rememberMe);
         } catch (e) {
           throw Exception('Failed to save remember me preference');
@@ -48,7 +46,7 @@ class LoginService {
 
   Future<bool> isRememberMeEnabled() async {
     try {
-      await init(); // Try to initialize if not already done
+      await init(); 
       return _prefs?.getBool(_rememberMeKey) ?? false;
     } catch (e) {
       return false;

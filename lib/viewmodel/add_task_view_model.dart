@@ -12,7 +12,7 @@ class AddTaskViewModel extends ChangeNotifier {
   bool _isLoading = false;
 
   AddTaskViewModel({TaskRepository? repository})
-      : _repository = repository ?? TaskRepository();
+    : _repository = repository ?? TaskRepository();
 
   String? get errorMessage => _errorMessage;
   String get title => _title;
@@ -50,7 +50,7 @@ class AddTaskViewModel extends ChangeNotifier {
         lastSyncTime: DateTime.now(),
         email: email,
       );
-      await _repository.addTask(task); 
+      await _repository.addTask(task);
       _isLoading = false;
       notifyListeners();
       return true;

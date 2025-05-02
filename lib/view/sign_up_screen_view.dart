@@ -108,9 +108,12 @@ class SignUpScreenView extends StatelessWidget {
                                 color: Colors.red,
                                 size: 30,
                               ),
-                              onPressed: viewModel.isLoading
-                                  ? null
-                                  : () => SignUpHelper.handleGoogleSignIn(context),
+                              onPressed:
+                                  viewModel.isLoading
+                                      ? null
+                                      : () => SignUpHelper.handleGoogleSignIn(
+                                        context,
+                                      ),
                             ),
                             IconButton(
                               icon: const Icon(
@@ -118,9 +121,12 @@ class SignUpScreenView extends StatelessWidget {
                                 color: Colors.blue,
                                 size: 30,
                               ),
-                              onPressed: viewModel.isLoading
-                                  ? null
-                                  : () => SignUpHelper.handleFacebookSignIn(context),
+                              onPressed:
+                                  viewModel.isLoading
+                                      ? null
+                                      : () => SignUpHelper.handleFacebookSignIn(
+                                        context,
+                                      ),
                             ),
                             IconButton(
                               icon: const Icon(
@@ -128,26 +134,31 @@ class SignUpScreenView extends StatelessWidget {
                                 color: Colors.black,
                                 size: 30,
                               ),
-                              onPressed: viewModel.isLoading
-                                  ? null
-                                  : () => SignUpHelper.handleAppleSignIn(context),
+                              onPressed:
+                                  viewModel.isLoading
+                                      ? null
+                                      : () => SignUpHelper.handleAppleSignIn(
+                                        context,
+                                      ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: viewModel.isFormValid && !viewModel.isLoading
-                              ? () {
-                                  SignUpHelper.handleSignUp(
-                                    context: context,
-                                    viewModel: viewModel,
-                                  );
-                                }
-                              : null,
+                          onPressed:
+                              viewModel.isFormValid && !viewModel.isLoading
+                                  ? () {
+                                    SignUpHelper.handleSignUp(
+                                      context: context,
+                                      viewModel: viewModel,
+                                    );
+                                  }
+                                  : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: viewModel.isFormValid
-                                ? theme.primaryColor
-                                : theme.primaryColor.withAlpha(128),
+                            backgroundColor:
+                                viewModel.isFormValid
+                                    ? theme.primaryColor
+                                    : theme.primaryColor.withAlpha(128),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -156,22 +167,23 @@ class SignUpScreenView extends StatelessWidget {
                               vertical: 12,
                             ),
                           ),
-                          child: viewModel.isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                          child:
+                              viewModel.isLoading
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Text(
+                                    'SIGN UP',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                )
-                              : Text(
-                                  'SIGN UP',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                  ),
-                                ),
                         ),
                         const SizedBox(height: 16),
                         if (viewModel.errorMessage != null)
@@ -183,9 +195,10 @@ class SignUpScreenView extends StatelessWidget {
                           ),
                         const SizedBox(height: 16),
                         GestureDetector(
-                          onTap: viewModel.isLoading
-                              ? null
-                              : () => context.go(RouteNames.loginScreen),
+                          onTap:
+                              viewModel.isLoading
+                                  ? null
+                                  : () => context.go(RouteNames.loginScreen),
                           child: Text.rich(
                             TextSpan(
                               children: [

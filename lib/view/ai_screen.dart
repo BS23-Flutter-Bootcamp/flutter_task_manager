@@ -19,13 +19,8 @@ class AiScreen extends StatelessWidget {
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromARGB(255, 191, 173, 227), // Deeper lavender
-                  Color.fromARGB(
-                    255,
-                    164,
-                    145,
-                    197,
-                  ), // Bold violet for contrast
+                  Color.fromARGB(255, 191, 173, 227),
+                  Color.fromARGB(255, 164, 145, 197),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

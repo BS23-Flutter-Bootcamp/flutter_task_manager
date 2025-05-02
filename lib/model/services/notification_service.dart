@@ -5,7 +5,6 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  // Singleton pattern
   static final NotificationService _notificationService =
       NotificationService._internal();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -116,7 +115,6 @@ class NotificationService {
     return notificationStatus.isGranted && alarmStatus.isGranted;
   }
 
-  // Update init method to check permissions
   Future<void> init() async {
     final AndroidInitializationSettings androidInitializationSettings =
         AndroidInitializationSettings("mipmap/ic_launcher");

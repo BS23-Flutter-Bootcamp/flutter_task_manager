@@ -23,7 +23,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.task?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.task?.description ?? '',
+    );
   }
 
   @override
@@ -162,29 +164,38 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           children: [
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: viewModel.isUpdating || viewModel.title.isEmpty
-                                    ? null
-                                    : () async {
-                                        final success = await viewModel.updateTask();
-                                        if (success && context.mounted) {
-                                          ToastSnackbar.show(
-                                            context: context,
-                                            message: 'Task updated successfully!',
-                                            color: Colors.green[300]!,
-                                          );
-                                          context.go(RouteNames.taskListScreen);
-                                        } else if (context.mounted) {
-                                          ToastSnackbar.show(
-                                            context: context,
-                                            message: viewModel.errorMessage ?? 'Failed to update task',
-                                            color: Colors.red[300]!,
-                                          );
-                                        }
-                                      },
+                                onPressed:
+                                    viewModel.isUpdating ||
+                                            viewModel.title.isEmpty
+                                        ? null
+                                        : () async {
+                                          final success =
+                                              await viewModel.updateTask();
+                                          if (success && context.mounted) {
+                                            ToastSnackbar.show(
+                                              context: context,
+                                              message:
+                                                  'Task updated successfully!',
+                                              color: Colors.green[300]!,
+                                            );
+                                            context.go(
+                                              RouteNames.taskListScreen,
+                                            );
+                                          } else if (context.mounted) {
+                                            ToastSnackbar.show(
+                                              context: context,
+                                              message:
+                                                  viewModel.errorMessage ??
+                                                  'Failed to update task',
+                                              color: Colors.red[300]!,
+                                            );
+                                          }
+                                        },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: viewModel.title.isEmpty
-                                      ? theme.primaryColor.withAlpha(128)
-                                      : theme.primaryColor,
+                                  backgroundColor:
+                                      viewModel.title.isEmpty
+                                          ? theme.primaryColor.withAlpha(128)
+                                          : theme.primaryColor,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
@@ -193,46 +204,55 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                     vertical: 12,
                                   ),
                                 ),
-                                child: viewModel.isUpdating
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
+                                child:
+                                    viewModel.isUpdating
+                                        ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                        : Text(
+                                          'UPDATE TASK',
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                fontSize: 14,
+                                                color: Colors.white,
+                                              ),
                                         ),
-                                      )
-                                    : Text(
-                                        'UPDATE TASK',
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          fontSize: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
                               ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: viewModel.isDeleting
-                                    ? null
-                                    : () async {
-                                        final success = await viewModel.deleteTask();
-                                        if (success && context.mounted) {
-                                          ToastSnackbar.show(
-                                            context: context,
-                                            message: 'Task deleted successfully!',
-                                            color: Colors.green[300]!,
-                                          );
-                                          context.go(RouteNames.taskListScreen);
-                                        } else if (context.mounted) {
-                                          ToastSnackbar.show(
-                                            context: context,
-                                            message: viewModel.errorMessage ?? 'Failed to delete task',
-                                            color: Colors.red,
-                                          );
-                                        }
-                                      },
+                                onPressed:
+                                    viewModel.isDeleting
+                                        ? null
+                                        : () async {
+                                          final success =
+                                              await viewModel.deleteTask();
+                                          if (success && context.mounted) {
+                                            ToastSnackbar.show(
+                                              context: context,
+                                              message:
+                                                  'Task deleted successfully!',
+                                              color: Colors.green[300]!,
+                                            );
+                                            context.go(
+                                              RouteNames.taskListScreen,
+                                            );
+                                          } else if (context.mounted) {
+                                            ToastSnackbar.show(
+                                              context: context,
+                                              message:
+                                                  viewModel.errorMessage ??
+                                                  'Failed to delete task',
+                                              color: Colors.red,
+                                            );
+                                          }
+                                        },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red[400],
                                   shape: RoundedRectangleBorder(
@@ -243,22 +263,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                     vertical: 12,
                                   ),
                                 ),
-                                child: viewModel.isDeleting
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
+                                child:
+                                    viewModel.isDeleting
+                                        ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                        : Text(
+                                          'DELETE TASK',
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                fontSize: 14,
+                                                color: Colors.white,
+                                              ),
                                         ),
-                                      )
-                                    : Text(
-                                        'DELETE TASK',
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          fontSize: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
                               ),
                             ),
                           ],

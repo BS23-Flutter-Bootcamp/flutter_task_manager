@@ -18,7 +18,10 @@ class DatabaseService {
 
   Future<Database> _initDatabase() async {
     try {
-      final String path = join(await getDatabasesPath(), AppConstants.databaseName);
+      final String path = join(
+        await getDatabasesPath(),
+        AppConstants.databaseName,
+      );
       return await openDatabase(
         path,
         version: AppConstants.version,
@@ -38,7 +41,9 @@ class DatabaseService {
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0');
+            await db.execute(
+              'ALTER TABLE ${AppConstants.tableName} ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0',
+            );
           }
         },
       );
@@ -88,7 +93,9 @@ class DatabaseService {
       if (!(await _tableExists(db, AppConstants.tableName))) {
         return [];
       }
-      final List<Map<String, dynamic>> maps = await db.query(AppConstants.tableName);
+      final List<Map<String, dynamic>> maps = await db.query(
+        AppConstants.tableName,
+      );
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
       rethrow;
@@ -108,7 +115,6 @@ class DatabaseService {
       );
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
-
       rethrow;
     }
   }
@@ -183,7 +189,6 @@ class DatabaseService {
       if (maps.isNotEmpty) return TaskEntity.fromMap(maps.first);
       return null;
     } catch (e) {
-  
       rethrow;
     }
   }
@@ -194,7 +199,6 @@ class DatabaseService {
       await db.close();
       _database = null;
     } catch (e) {
-
       rethrow;
     }
   }

@@ -27,78 +27,81 @@ class DetailsPageScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: task == null
-              ? Center(
-                  child: Text(
-                    'No Task Details Available',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade600,
+          child:
+              task == null
+                  ? Center(
+                    child: Text(
+                      'No Task Details Available',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                  ),
-                )
-              : Column(
-                  children: [
-                    TaskAppBar(
-                      text: 'Task Details',
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: SingleChildScrollView(
-                          child: FadeInUp(
-                            duration: const Duration(milliseconds: 600),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                const SizedBox(height: 16),
-                                DetailCard(
-                                  title: 'Title',
-                                  value: task.title,
-                                  icon: Icons.title,
-                                ),
-                                DetailCard(
-                                  title: 'Description',
-                                  value: task.description ?? 'No description available',
-                                  icon: Icons.description,
-                                ),
-                                DetailCard(
-                                  title: 'Due Date',
-                                  value: task.dueDate != null
-                                      ? '${task.dueDate!.toLocal()}'.split(' ')[0]
-                                      : 'No due date set',
-                                  icon: Icons.calendar_today,
-                                ),
-                                DetailCard(
-                                  title: 'Status',
-                                  value: task.isCompleted ? 'Completed' : 'Incomplete',
-                                  icon: Icons.check_circle_outline,
-                                ),
-                                const SizedBox(height: 24),
-                                TaskButton(
-                                  text: 'Edit Task',
-                                  icon: Icons.edit,
-                                  onTap: () {
-                                    context.go(
-                                      RouteNames.editTaskScreen,
-                                      extra: task,
-                                    );
-                                  },
-                                ),
-                              ],
+                  )
+                  : Column(
+                    children: [
+                      TaskAppBar(text: 'Task Details'),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: SingleChildScrollView(
+                            child: FadeInUp(
+                              duration: const Duration(milliseconds: 600),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: 16),
+                                  DetailCard(
+                                    title: 'Title',
+                                    value: task.title,
+                                    icon: Icons.title,
+                                  ),
+                                  DetailCard(
+                                    title: 'Description',
+                                    value:
+                                        task.description ??
+                                        'No description available',
+                                    icon: Icons.description,
+                                  ),
+                                  DetailCard(
+                                    title: 'Due Date',
+                                    value:
+                                        task.dueDate != null
+                                            ? '${task.dueDate!.toLocal()}'
+                                                .split(' ')[0]
+                                            : 'No due date set',
+                                    icon: Icons.calendar_today,
+                                  ),
+                                  DetailCard(
+                                    title: 'Status',
+                                    value:
+                                        task.isCompleted
+                                            ? 'Completed'
+                                            : 'Incomplete',
+                                    icon: Icons.check_circle_outline,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  TaskButton(
+                                    text: 'Edit Task',
+                                    icon: Icons.edit,
+                                    onTap: () {
+                                      context.go(
+                                        RouteNames.editTaskScreen,
+                                        extra: task,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
         ),
       ),
     );
   }
 }
-
-
-

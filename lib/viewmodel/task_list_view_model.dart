@@ -25,7 +25,6 @@ class TaskListViewModel extends ChangeNotifier {
         await _repository.syncTasks();
       }
 
-      // Always fetch from local SQLite
       _tasks = await _repository.getTasks();
       _isLoading = false;
       notifyListeners();
@@ -34,7 +33,6 @@ class TaskListViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      // Attempt to load local tasks even on error
       try {
         _tasks = await _repository.getTasks();
       } catch (_) {

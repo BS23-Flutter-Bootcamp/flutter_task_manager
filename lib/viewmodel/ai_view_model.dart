@@ -7,11 +7,9 @@ class AiViewModel extends ChangeNotifier {
   final AiRepository _aiRepository;
   final TaskRepository _taskRepository;
 
-  AiViewModel({
-    AiRepository? aiRepository,
-    TaskRepository? taskRepository,
-  })  : _aiRepository =   aiRepository ?? AiRepository(),
-        _taskRepository = taskRepository ?? TaskRepository();
+  AiViewModel({AiRepository? aiRepository, TaskRepository? taskRepository})
+    : _aiRepository = aiRepository ?? AiRepository(),
+      _taskRepository = taskRepository ?? TaskRepository();
 
   String _prompt = '';
   List<TaskEntity> _generatedTasks = [];
