@@ -15,7 +15,7 @@ class AiScreen extends StatelessWidget {
       create: (_) => AiViewModel(),
       child: Scaffold(
         appBar: AppBar(
-              flexibleSpace: Container(
+          flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -38,11 +38,10 @@ class AiScreen extends StatelessWidget {
               context.go(RouteNames.taskListScreen);
             },
           ),
-          title: const Text('Generate Task Plan',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              )),
+          title: const Text(
+            'Generate Task Plan',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: AppConstants.textColorDark,
         ),
         body: Consumer<AiViewModel>(
@@ -53,18 +52,23 @@ class AiScreen extends StatelessWidget {
                 children: [
                   TextField(
                     decoration: InputDecoration(
-                      labelText: 'Enter your prompt (e.g., "Plan a study schedule")',
-                      border: OutlineInputBorder()
+                      labelText:
+                          'Enter your prompt (e.g., "Plan a study schedule")',
+                      border: OutlineInputBorder(),
                     ),
                     maxLines: 3,
                     onChanged: viewModel.setPrompt,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: viewModel.isLoading ? null : () => viewModel.generateTasks(),
-                    child: viewModel.isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Generate Tasks'),
+                    onPressed:
+                        viewModel.isLoading
+                            ? null
+                            : () => viewModel.generateTasks(),
+                    child:
+                        viewModel.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('Generate Tasks'),
                   ),
                   if (viewModel.errorMessage != null &&
                       !viewModel.errorMessage!.contains('prompt'))
@@ -76,27 +80,39 @@ class AiScreen extends StatelessWidget {
                       ),
                     ),
                   Expanded(
-                    child: viewModel.generatedTasks.isEmpty
-                        ? const Center(child: Text('No tasks generated yet'))
-                        : ListView.builder(
-                            itemCount: viewModel.generatedTasks.length,
-                            itemBuilder: (context, index) {
-                              final task = viewModel.generatedTasks[index];
-                              return TaskPreviewCard(
-                                task: task,
-                                onUpdate: (updatedTask) {
-                                  viewModel.updateTask(index, updatedTask);
-                                },
-                              );
-                            },
-                          ),
+                    child:
+                        viewModel.generatedTasks.isEmpty
+                            ? const Center(
+                              child: Text('No tasks generated yet'),
+                            )
+                            : ListView.builder(
+                              itemCount: viewModel.generatedTasks.length,
+                              itemBuilder: (context, index) {
+                                final task = viewModel.generatedTasks[index];
+                                return TaskPreviewCard(
+                                  task: task,
+                                  onUpdate: (updatedTask) {
+                                    viewModel.updateTask(index, updatedTask);
+                                  },
+                                );
+                              },
+                            ),
                   ),
                   if (viewModel.generatedTasks.isNotEmpty)
                     ElevatedButton(
-                      onPressed: viewModel.isLoading ? null : () => viewModel.saveTasks(),
-                      child: viewModel.isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text('Save Tasks'),
+                      onPressed:
+                          viewModel.isLoading
+                              ? null
+                              : () async {
+                                await viewModel.saveTasks();
+                                if (context.mounted) {
+                                  context.go(RouteNames.taskListScreen);
+                                }
+                              },
+                      child:
+                          viewModel.isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('Save Tasks'),
                     ),
                 ],
               ),
@@ -112,7 +128,11 @@ class TaskPreviewCard extends StatefulWidget {
   final TaskEntity task;
   final Function(TaskEntity) onUpdate;
 
-  const TaskPreviewCard({super.key, required this.task, required this.onUpdate});
+  const TaskPreviewCard({
+    super.key,
+    required this.task,
+    required this.onUpdate,
+  });
 
   @override
   TaskPreviewCardState createState() => TaskPreviewCardState();
@@ -127,7 +147,9 @@ class TaskPreviewCardState extends State<TaskPreviewCard> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task.title);
-    _descriptionController = TextEditingController(text: widget.task.description);
+    _descriptionController = TextEditingController(
+      text: widget.task.description,
+    );
     _dueDate = widget.task.dueDate;
   }
 
@@ -183,7 +205,9 @@ class TaskPreviewCardState extends State<TaskPreviewCard> {
                     if (selectedDate != null) {
                       setState(() {
                         _dueDate = selectedDate;
-                        widget.onUpdate(widget.task.copyWith(dueDate: _dueDate));
+                        widget.onUpdate(
+                          widget.task.copyWith(dueDate: _dueDate),
+                        );
                       });
                     }
                   },
@@ -199,11 +223,7 @@ class TaskPreviewCardState extends State<TaskPreviewCard> {
 }
 
 extension TaskEntityCopy on TaskEntity {
-  TaskEntity copyWith({
-    String? title,
-    String? description,
-    DateTime? dueDate,
-  }) {
+  TaskEntity copyWith({String? title, String? description, DateTime? dueDate}) {
     return TaskEntity(
       id: id,
       title: title ?? this.title,

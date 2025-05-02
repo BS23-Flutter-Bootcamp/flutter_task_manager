@@ -16,23 +16,26 @@ class AIService {
   Future<List<TaskEntity>> generateTaskPlan(String userPrompt) async {
     try {
       final currentDate = DateTime.now();
+      final defaultDays = 7;
       final prompt = '''
-Given the following user request: "$userPrompt",Generate a to-do plan based on the request. If no days are specified, 
-create 3–5 relevant tasks. If days are provided, distribute tasks accordingly.
-  Each task must have:
-- A title (short, descriptive, max 50 characters).
+Given the user request: "$userPrompt", create a to-do task plan with 3–5 tasks related to the request, organized by day (e.g., Day 1, Day 2). If the request specifies a number of days (e.g., "for 5 days"), distribute that number of tasks across those days, labeling each task with the corresponding day in the title (e.g., "Day 1: Task Title"). If no days are specified, distribute 3–5 tasks across the next $defaultDays days. Each task must have:
+- A title (short, descriptive, max 50 characters, prefixed with "Day X: " where X is the day number).
 - A description (1–2 sentences detailing the task).
-- A due date (in ISO 8601 format, e.g., "2025-05-01T14:00:00", within the next 7 days from today, ${currentDate.toIso8601String()}).
-Output **only** a JSON array of objects, without any Markdown, code blocks, or additional text. Example:
+- A due date (ISO 8601 format, e.g., "2025-05-01T14:00:00", within the specified or default $defaultDays days from today, ${currentDate.toIso8601String()}).
+Output only a JSON array of objects. Example:
 [
   {
-    "title": "Task 1",
+    "title": "Day 1: Task 1",
     "description": "Description of task 1.",
     "dueDate": "2025-05-01T14:00:00"
   },
-  ...
+  {
+    "title": "Day 2: Task 2",
+    "description": "Description of task 2.",
+    "dueDate": "2025-05-02T14:00:00"
+  }
 ]
-Ensure due dates are realistic, spread across the next 7 days, and in local time. If the prompt is vague, make reasonable assumptions to create relevant tasks.
+Ensure due dates are realistic, spread across the specified or default $defaultDays days, and in local time. If the prompt is vague, make reasonable assumptions to create relevant tasks.
 ''';
 
       final content = [Content.text(prompt)];

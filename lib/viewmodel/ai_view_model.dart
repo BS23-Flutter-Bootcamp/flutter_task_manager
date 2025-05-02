@@ -5,9 +5,13 @@ import 'package:flutter_task_manager/model/services/ai_service.dart';
 
 class AiViewModel extends ChangeNotifier {
   final AIService _aiService;
+  final TaskRepository _taskRepository;
 
-  AiViewModel({AIService? aiService, TaskRepository? taskRepository})
-    : _aiService = aiService ?? AIService();
+  AiViewModel({
+    AIService? aiService,
+    TaskRepository? taskRepository,
+  })  : _aiService = aiService ?? AIService(),
+        _taskRepository = taskRepository ?? TaskRepository();
 
   String _prompt = '';
   List<TaskEntity> _generatedTasks = [];
@@ -65,6 +69,10 @@ class AiViewModel extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
+      final taskIds = await _taskRepository.addTasksFromAI(_generatedTasks);
+      if (kDebugMode) {
+        print('Saved tasks with IDs: $taskIds');
+      }
       _generatedTasks = [];
       _prompt = '';
       _isLoading = false;
