@@ -5,15 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
-  final TaskRepository _repository;
-  String _title = '';
-  String? _description;
-  DateTime? _dueDate;
-  String? _errorMessage;
-  final TaskEntity? _task;
-  bool _isUpdating = false;
-  bool _isDeleting = false;
-
   EditTaskViewModel({TaskRepository? repository, TaskEntity? task})
     : _repository = repository ?? TaskRepository(),
       _task = task {
@@ -23,6 +14,15 @@ class EditTaskViewModel extends ChangeNotifier {
       _dueDate = task.dueDate;
     }
   }
+
+  final TaskRepository _repository;
+  String _title = '';
+  String? _description;
+  DateTime? _dueDate;
+  String? _errorMessage;
+  final TaskEntity? _task;
+  bool _isUpdating = false;
+  bool _isDeleting = false;
 
   String? get errorMessage => _errorMessage;
   TaskEntity? get task => _task;
