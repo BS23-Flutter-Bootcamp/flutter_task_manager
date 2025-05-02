@@ -5,6 +5,7 @@ import 'package:flutter_task_manager/model/services/database_service.dart';
 import 'package:flutter_task_manager/model/services/firestore_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_task_manager/model/repositories/notification_repository.dart';
+import 'package:intl/intl.dart';
 
 class TaskRepository {
   TaskRepository({
@@ -13,7 +14,8 @@ class TaskRepository {
     NotificationRepository? notificationRepository,
   }) : _databaseService = databaseService ?? DatabaseService(),
        _firestoreService = firestoreService ?? FirestoreService(),
-       _notificationRepository = notificationRepository ?? NotificationRepository();
+       _notificationRepository =
+           notificationRepository ?? NotificationRepository();
 
   final DatabaseService _databaseService;
   final FirestoreService _firestoreService;
@@ -45,18 +47,19 @@ class TaskRepository {
         email: updatedTask.email,
         isDeleted: false,
       );
-      await _notificationRepository.scheduleTestNotification(
+      await _notificationRepository.scheduleImmediateNotification(
         id: taskId,
-        title: 'Task Reminder',
-        body: 'Task "${task.title}" is due in 15 minutes!',
+        title: '📅 Task Scheduled!',
+        body:
+            'Task "${task.title}" is set for ${task.dueDate != null ? DateFormat('EEE, MMM d, yyyy - hh:mm a').format(task.dueDate!) : 'unknown date'}.  Stay focused and get things done!',
       );
+
       await _notificationRepository.scheduleTaskNotifications(taskWithId);
       if (await _isOnline()) {
         await _firestoreService.upsertTask(taskWithId, _currentUserEmail!);
       }
       return taskId;
     } catch (e) {
-      if (kDebugMode) print('Add Task Error: $e');
       rethrow;
     }
   }
@@ -66,7 +69,6 @@ class TaskRepository {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
       return await _databaseService.getTasksByEmail(_currentUserEmail!);
     } catch (e) {
-      if (kDebugMode) print('Get Tasks Error: $e');
       rethrow;
     }
   }
@@ -76,8 +78,15 @@ class TaskRepository {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
       if (task.id == null) throw Exception('Task ID is null');
       if (await _isOnline()) {
-        final remoteTask = await _firestoreService.getTask(task.id!, _currentUserEmail!);
-        if (remoteTask != null && remoteTask.isDeleted && remoteTask.lastSyncTime!.isAfter(task.lastSyncTime ?? DateTime(1970))) {
+        final remoteTask = await _firestoreService.getTask(
+          task.id!,
+          _currentUserEmail!,
+        );
+        if (remoteTask != null &&
+            remoteTask.isDeleted &&
+            remoteTask.lastSyncTime!.isAfter(
+              task.lastSyncTime ?? DateTime(1970),
+            )) {
           await _databaseService.deleteTask(task.id!);
           await _notificationRepository.cancelTaskNotifications(task.id!);
           return;
@@ -88,10 +97,11 @@ class TaskRepository {
         email: _currentUserEmail!,
       );
       await _notificationRepository.cancelTaskNotifications(task.id!);
-      await _notificationRepository.scheduleTestNotification(
+      await _notificationRepository.scheduleImmediateNotification(
         id: task.id!,
-        title: 'Task Reminder',
-        body: 'Task "${task.title}" is due in 2 minutes!',
+        title: '✅ Task Updated!',
+        body:
+            'Your task has been successfully updated. Stay on track and keep up the momentum!',
       );
       await _notificationRepository.scheduleTaskNotifications(updatedTask);
       await _databaseService.updateTask(updatedTask);
@@ -99,7 +109,6 @@ class TaskRepository {
         await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
       }
     } catch (e) {
-      if (kDebugMode) print('Update Task Error: $e');
       rethrow;
     }
   }
@@ -130,7 +139,6 @@ class TaskRepository {
     try {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
       if (!await _isOnline()) {
-        if (kDebugMode) print('Offline mode: Skipping Firestore sync');
         return;
       }
 
@@ -141,20 +149,25 @@ class TaskRepository {
       for (final localTask in localTasks) {
         final remoteTask = remoteTasks.firstWhere(
           (rt) => rt.id == localTask.id,
-          orElse: () => TaskEntity(
-            id: localTask.id,
-            title: '',
-            dueDate: null,
-            email: _currentUserEmail!,
-            lastSyncTime: DateTime(1970),
-            isDeleted: false,
-          ),
+          orElse:
+              () => TaskEntity(
+                id: localTask.id,
+                title: '',
+                dueDate: null,
+                email: _currentUserEmail!,
+                lastSyncTime: DateTime(1970),
+                isDeleted: false,
+              ),
         );
-        if (localTask.lastSyncTime!.isAfter(remoteTask.lastSyncTime ?? DateTime(1970))) {
-          await _firestoreService.upsertTask(localTask, _currentUserEmail!).timeout(
-            const Duration(seconds: 10),
-            onTimeout: () => throw Exception('Firestore sync timed out'),
-          );
+        if (localTask.lastSyncTime!.isAfter(
+          remoteTask.lastSyncTime ?? DateTime(1970),
+        )) {
+          await _firestoreService
+              .upsertTask(localTask, _currentUserEmail!)
+              .timeout(
+                const Duration(seconds: 5),
+                onTimeout: () => throw Exception('Firestore sync timed out'),
+              );
         }
       }
 
@@ -162,41 +175,52 @@ class TaskRepository {
       for (final remoteTask in remoteTasks) {
         final localTask = localTasks.firstWhere(
           (lt) => lt.id == remoteTask.id,
-          orElse: () => TaskEntity(
-            id: remoteTask.id,
-            title: '',
-            dueDate: null,
-            email: _currentUserEmail!,
-            lastSyncTime: DateTime(1970),
-            isDeleted: false,
-          ),
+          orElse:
+              () => TaskEntity(
+                id: remoteTask.id,
+                title: '',
+                dueDate: null,
+                email: _currentUserEmail!,
+                lastSyncTime: DateTime(1970),
+                isDeleted: false,
+              ),
         );
-        if (remoteTask.lastSyncTime!.isAfter(localTask.lastSyncTime ?? DateTime(1970))) {
+        if (remoteTask.lastSyncTime!.isAfter(
+          localTask.lastSyncTime ?? DateTime(1970),
+        )) {
           if (remoteTask.isDeleted) {
             await _databaseService.deleteTask(remoteTask.id!);
-            await _notificationRepository.cancelTaskNotifications(remoteTask.id!);
+            await _notificationRepository.cancelTaskNotifications(
+              remoteTask.id!,
+            );
           } else {
-            final existingTask = await _databaseService.getTaskById(remoteTask.id!);
+            final existingTask = await _databaseService.getTaskById(
+              remoteTask.id!,
+            );
             if (existingTask == null) {
               await _databaseService.insertTask(remoteTask);
               if (!remoteTask.isCompleted) {
-                await _notificationRepository.scheduleTaskNotifications(remoteTask);
+                await _notificationRepository.scheduleTaskNotifications(
+                  remoteTask,
+                );
               }
             } else {
               await _databaseService.updateTask(remoteTask);
-              await _notificationRepository.cancelTaskNotifications(remoteTask.id!);
+              await _notificationRepository.cancelTaskNotifications(
+                remoteTask.id!,
+              );
               if (!remoteTask.isCompleted) {
-                await _notificationRepository.scheduleTaskNotifications(remoteTask);
+                await _notificationRepository.scheduleTaskNotifications(
+                  remoteTask,
+                );
               }
             }
           }
         }
       }
 
-      // Clean up local deleted tasks
       await _databaseService.deleteTasksWhere(isDeleted: true);
     } catch (e) {
-      if (kDebugMode) print('Sync Tasks Error: $e');
       rethrow;
     }
   }
@@ -211,7 +235,6 @@ class TaskRepository {
       }
       return taskIds;
     } catch (e) {
-      if (kDebugMode) print('Add Tasks From AI Error: $e');
       rethrow;
     }
   }

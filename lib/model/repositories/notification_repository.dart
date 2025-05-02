@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
@@ -50,12 +49,12 @@ class NotificationRepository {
   }
 
   //Schedule test notification
-  Future<void> scheduleTestNotification({
+  Future<void> scheduleImmediateNotification({
     required int id,
     required String title,
     required String body,
   }) async {
-    await _notificationService.scheduleTestNotification(
+    await _notificationService.scheduleImmediateNotification(
       id: id,
       title: title,
       body: body,
@@ -65,11 +64,6 @@ class NotificationRepository {
   /// Schedule a periodic notification
   Future<void> scheduleTaskNotifications(TaskEntity task) async {
     if (task.dueDate == null || task.isCompleted) {
-      if (kDebugMode && task.isCompleted) {
-        if (kDebugMode) {
-          print('Skipping notifications for completed task: ${task.id}');
-        }
-      }
       return;
     }
 
@@ -77,12 +71,12 @@ class NotificationRepository {
       final scheduledMinutes = task.dueDate!.subtract(Duration(minutes: 15));
       final canUseExact = await _notificationService.canScheduleExactAlarms();
 
-      // Schedule 15-minute reminder
       if (scheduledMinutes.isAfter(DateTime.now())) {
         await scheduleNotification(
           id: task.id!,
-          title: 'Task Reminder',
-          body: 'Task "${task.title}" is due in 15 minutes!',
+          title: '⏳ Upcoming Task!',
+          body:
+              '🚀 Stay on track! Your task "${task.title}" is due in 15 minutes. Time to get things done!',
           eventDate: DateTime(
             scheduledMinutes.year,
             scheduledMinutes.month,
@@ -97,22 +91,15 @@ class NotificationRepository {
         );
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Failed to schedule notifications for task ${task.id}: $e');
-      }
+      rethrow;
     }
   }
 
   Future<void> cancelTaskNotifications(int taskId) async {
-    if (kDebugMode) {
-      print('Canceling notifications for task: $taskId');
-    }
     try {
       await notificationsPlugin.cancel(taskId);
     } catch (e) {
-      if (kDebugMode) {
-        print('Failed to cancel notifications for task $taskId: $e');
-      }
+      rethrow;
     }
   }
 

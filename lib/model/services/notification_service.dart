@@ -92,16 +92,12 @@ class NotificationService {
     }
   }
 
-  Future<void> scheduleTestNotification({
+  Future<void> scheduleImmediateNotification({
     required int id,
     required String title,
     required String body,
   }) async {
-    final scheduledTime = DateTime.now().add(const Duration(minutes: 1));
-
-    if (kDebugMode) {
-      print('Scheduling test notification for: ${scheduledTime.toString()}');
-    }
+    final scheduledTime = DateTime.now().add(const Duration(seconds: 3));
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
@@ -129,15 +125,8 @@ class NotificationService {
     final InitializationSettings initializationSettings =
         InitializationSettings(android: androidInitializationSettings);
 
-    // Request and check permissions
     await _requestPermissions();
-    final hasPermissions = await checkPermissions();
-    if (!hasPermissions) {
-      debugPrint('Warning: Not all permissions are granted');
-    }
-
     tz.initializeTimeZones();
-
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
@@ -174,7 +163,6 @@ class NotificationService {
       tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exact,
-
       payload: payload,
       matchDateTimeComponents: dateTimeComponents,
     );
@@ -183,14 +171,8 @@ class NotificationService {
   Future<bool> canScheduleExactAlarms() async {
     try {
       final status = await Permission.scheduleExactAlarm.status;
-      if (kDebugMode) {
-        print('Schedule exact alarm permission: $status');
-      }
       return status.isGranted;
     } catch (e) {
-      if (kDebugMode) {
-        print('Error checking exact alarm permission: $e');
-      }
       return false;
     }
   }
