@@ -74,13 +74,20 @@ class TaskRepository {
   Future<void> updateTask(TaskEntity task) async {
     try {
       if (_currentUserEmail == null) throw Exception('User not authenticated');
+      if (task.id == null) throw Exception('Task ID is null');
+      if (await _isOnline()) {
+        final remoteTask = await _firestoreService.getTask(task.id!, _currentUserEmail!);
+        if (remoteTask != null && remoteTask.isDeleted && remoteTask.lastSyncTime!.isAfter(task.lastSyncTime ?? DateTime(1970))) {
+          await _databaseService.deleteTask(task.id!);
+          await _notificationRepository.cancelTaskNotifications(task.id!);
+          return;
+        }
+      }
       final updatedTask = task.copyWith(
         lastSyncTime: DateTime.now(),
         email: _currentUserEmail!,
       );
-      if (task.id != null) {
-        await _notificationRepository.cancelTaskNotifications(task.id!);
-      }
+      await _notificationRepository.cancelTaskNotifications(task.id!);
       await _notificationRepository.scheduleTestNotification(
         id: task.id!,
         title: 'Task Reminder',
@@ -110,7 +117,7 @@ class TaskRepository {
         await _notificationRepository.cancelTaskNotifications(id);
         if (await _isOnline()) {
           await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
-          await syncTasks(); // Propagate deletion
+          await syncTasks();
         }
       }
     } catch (e) {
@@ -127,7 +134,7 @@ class TaskRepository {
         return;
       }
 
-      final localTasks = await _databaseService.getTasksByEmail(_currentUserEmail!);
+      final localTasks = await _databaseService.getTasks();
       final remoteTasks = await _firestoreService.getTasks(_currentUserEmail!);
 
       // Sync local to remote
@@ -144,14 +151,10 @@ class TaskRepository {
           ),
         );
         if (localTask.lastSyncTime!.isAfter(remoteTask.lastSyncTime ?? DateTime(1970))) {
-          if (localTask.isDeleted) {
-            await _firestoreService.upsertTask(localTask, _currentUserEmail!); // Keep isDeleted: true in Firestore
-          } else {
-            await _firestoreService.upsertTask(localTask, _currentUserEmail!).timeout(
-              const Duration(seconds: 10),
-              onTimeout: () => throw Exception('Firestore sync timed out'),
-            );
-          }
+          await _firestoreService.upsertTask(localTask, _currentUserEmail!).timeout(
+            const Duration(seconds: 10),
+            onTimeout: () => throw Exception('Firestore sync timed out'),
+          );
         }
       }
 
