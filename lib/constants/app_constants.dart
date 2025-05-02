@@ -13,11 +13,12 @@ class AppConstants {
   static const String keyDescription = 'description';
   static const String keyDueDate = 'dueDate';
   static const String keyIsCompleted = 'isCompleted';
+  static const String keyIsDeleted = 'isDeleted';
 
   // Database constants
   static const String databaseName = 'task_manager.db';
   static const String tableName = 'task_manager';
-  static const int version = 0;
+  static const int version = 2;
   static const String keyLastSyncTime = 'lastSyncTime';
   static const String keyEmail = 'email';
 

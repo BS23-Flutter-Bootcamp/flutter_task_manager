@@ -12,29 +12,20 @@ class DatabaseService {
   DatabaseService._internal();
 
   Future<Database> get database async {
-    if (_database != null) {
-      return _database!;
-    }
+    if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
   Future<Database> _initDatabase() async {
     try {
-      final String path = join(
-        await getDatabasesPath(),
-        AppConstants.databaseName,
-      );
-      if (kDebugMode) {
-        print('Initializing database at path: $path');
-      }
+      final String path = join(await getDatabasesPath(), AppConstants.databaseName);
+      if (kDebugMode) print('Initializing database at path: $path');
       return await openDatabase(
         path,
-        version: AppConstants.version + 1,
+        version: AppConstants.version,
         onCreate: (db, version) async {
-          if (kDebugMode) {
-            print('Creating table: ${AppConstants.tableName}');
-          }
+          if (kDebugMode) print('Creating table: ${AppConstants.tableName}');
           await db.execute('''
             CREATE TABLE ${AppConstants.tableName} (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,24 +34,20 @@ class DatabaseService {
               dueDate TEXT,
               isCompleted INTEGER NOT NULL,
               lastSyncTime TEXT,
-              email TEXT NOT NULL
+              email TEXT NOT NULL,
+              isDeleted INTEGER NOT NULL DEFAULT 0
             )
           ''');
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            if (kDebugMode) {
-              print('Upgrading database, adding lastSyncTime and email columns');
-            }
-            await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN lastSyncTime TEXT');
-            await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN email TEXT NOT NULL DEFAULT ""');
+            if (kDebugMode) print('Adding isDeleted column');
+            await db.execute('ALTER TABLE ${AppConstants.tableName} ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0');
           }
         },
       );
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -77,9 +64,7 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) {
-          print('Table ${AppConstants.tableName} does not exist, recreating...');
-        }
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, recreating...');
         await db.execute('''
           CREATE TABLE ${AppConstants.tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,22 +73,19 @@ class DatabaseService {
             dueDate TEXT,
             isCompleted INTEGER NOT NULL,
             lastSyncTime TEXT,
-            email TEXT NOT NULL
+            email TEXT NOT NULL,
+            isDeleted INTEGER NOT NULL DEFAULT 0
           )
         ''');
       }
-      if (kDebugMode) {
-        print('Inserting task into ${AppConstants.tableName}: ${task.toMap()}');
-      }
+      if (kDebugMode) print('Inserting task: ${task.toMap()}');
       return await db.insert(
         AppConstants.tableName,
         task.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -112,19 +94,13 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) {
-          print('Table ${AppConstants.tableName} does not exist, returning empty list');
-        }
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, returning empty list');
         return [];
       }
-      final List<Map<String, dynamic>> maps = await db.query(
-        AppConstants.tableName,
-      );
+      final List<Map<String, dynamic>> maps = await db.query(AppConstants.tableName);
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -133,21 +109,17 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) {
-          print('Table ${AppConstants.tableName} does not exist, returning empty list');
-        }
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, returning empty list');
         return [];
       }
       final List<Map<String, dynamic>> maps = await db.query(
         AppConstants.tableName,
-        where: 'email = ?',
+        where: 'email = ? AND isDeleted = 0',
         whereArgs: [email],
       );
       return List.generate(maps.length, (i) => TaskEntity.fromMap(maps[i]));
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -156,9 +128,7 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) {
-          print('Table ${AppConstants.tableName} does not exist, recreating...');
-        }
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, recreating...');
         await db.execute('''
           CREATE TABLE ${AppConstants.tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -167,7 +137,8 @@ class DatabaseService {
             dueDate TEXT,
             isCompleted INTEGER NOT NULL,
             lastSyncTime TEXT,
-            email TEXT NOT NULL
+            email TEXT NOT NULL,
+            isDeleted INTEGER NOT NULL DEFAULT 0
           )
         ''');
       }
@@ -178,9 +149,7 @@ class DatabaseService {
         whereArgs: [task.id],
       );
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -189,16 +158,30 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) {
-          print('Table ${AppConstants.tableName} does not exist, skipping delete');
-        }
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, skipping delete');
         return;
       }
       await db.delete(AppConstants.tableName, where: 'id = ?', whereArgs: [id]);
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
+      if (kDebugMode) print('Database Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteTasksWhere({required bool isDeleted}) async {
+    try {
+      final db = await database;
+      if (!(await _tableExists(db, AppConstants.tableName))) {
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, skipping delete');
+        return;
       }
+      await db.delete(
+        AppConstants.tableName,
+        where: 'isDeleted = ?',
+        whereArgs: [isDeleted ? 1 : 0],
+      );
+    } catch (e) {
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -207,9 +190,7 @@ class DatabaseService {
     try {
       final db = await database;
       if (!(await _tableExists(db, AppConstants.tableName))) {
-        if (kDebugMode) {
-          print('Table ${AppConstants.tableName} does not exist, returning null');
-        }
+        if (kDebugMode) print('Table ${AppConstants.tableName} does not exist, returning null');
         return null;
       }
       final maps = await db.query(
@@ -217,14 +198,10 @@ class DatabaseService {
         where: 'id = ?',
         whereArgs: [id],
       );
-      if (maps.isNotEmpty) {
-        return TaskEntity.fromMap(maps.first);
-      }
+      if (maps.isNotEmpty) return TaskEntity.fromMap(maps.first);
       return null;
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
@@ -235,9 +212,7 @@ class DatabaseService {
       await db.close();
       _database = null;
     } catch (e) {
-      if (kDebugMode) {
-        print('Database Error: $e');
-      }
+      if (kDebugMode) print('Database Error: $e');
       rethrow;
     }
   }
