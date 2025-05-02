@@ -11,10 +11,10 @@ class SignUpHelper {
     if (success && context.mounted) {
       ToastSnackbar.show(
         context: context,
-        message: 'Account created successfully! Please verify your email.',
+        message: 'Account created successfully!',
         color: Colors.green[300]!,
       );
-      context.go(RouteNames.taskListScreen);
+      context.go(RouteNames.loginScreen);
     }
   }
 
