@@ -1,10 +1,10 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:go_router/go_router.dart';
+import 'package:animate_do/animate_do.dart';
 
-class TaskAppBar extends StatelessWidget {
-  const TaskAppBar({super.key, required this.text, this.icon});
+class DetailsTaskBar extends StatelessWidget {
+  const DetailsTaskBar({super.key, required this.text, this.icon});
 
   final String text;
   final IconData? icon;

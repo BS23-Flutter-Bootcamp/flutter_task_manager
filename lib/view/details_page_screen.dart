@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/detail_card.dart';
-import 'package:flutter_task_manager/view/widgets/task_appbar.dart';
+import 'package:flutter_task_manager/view/widgets/details_task_bar.dart';
 import 'package:flutter_task_manager/view/widgets/task_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:animate_do/animate_do.dart';
@@ -41,7 +41,7 @@ class DetailsPageScreen extends StatelessWidget {
                   )
                   : Column(
                     children: [
-                      TaskAppBar(text: 'Task Details'),
+                      DetailsTaskBar(text: 'Task Details'),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
