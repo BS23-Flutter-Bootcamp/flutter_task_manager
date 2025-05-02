@@ -15,6 +15,23 @@ class AiScreen extends StatelessWidget {
       create: (_) => AiViewModel(),
       child: Scaffold(
         appBar: AppBar(
+              flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 191, 173, 227), // Deeper lavender
+                  Color.fromARGB(
+                    255,
+                    164,
+                    145,
+                    197,
+                  ), // Bold violet for contrast
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
@@ -33,8 +50,7 @@ class AiScreen extends StatelessWidget {
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Enter your prompt (e.g., "Plan a study schedule")',
-                      border: OutlineInputBorder(),
-                     // errorText: viewModel.errorMessage!.contains('prompt') ? viewModel.errorMessage : null,
+                      border: OutlineInputBorder()
                     ),
                     maxLines: 3,
                     onChanged: viewModel.setPrompt,

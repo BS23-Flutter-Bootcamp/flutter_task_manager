@@ -42,6 +42,23 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       create: (_) => EditTaskViewModel(task: widget.task),
       child: Scaffold(
         appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 191, 173, 227), // Deeper lavender
+                  Color.fromARGB(
+                    255,
+                    164,
+                    145,
+                    197,
+                  ), // Bold violet for contrast
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.go(RouteNames.taskListScreen),
@@ -54,7 +71,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           ),
           centerTitle: true,
         ),
-        backgroundColor: theme.scaffoldBackgroundColor,
+
         body: Builder(
           builder: (BuildContext providerContext) {
             final viewModel = Provider.of<EditTaskViewModel>(
@@ -253,7 +270,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                               }
                                             },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
+                                      backgroundColor: Colors.red[400],
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(30),
                                       ),
