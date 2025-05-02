@@ -55,7 +55,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             ),
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => context.go(RouteNames.taskListScreen),
           ),
           title: Text(
