@@ -1,16 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
+import 'package:flutter_task_manager/model/repositories/ai_repository.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
-import 'package:flutter_task_manager/model/services/ai_service.dart';
 
 class AiViewModel extends ChangeNotifier {
-  final AIService _aiService;
+  final AiRepository _aiRepository;
   final TaskRepository _taskRepository;
 
   AiViewModel({
-    AIService? aiService,
+    AiRepository? aiRepository,
     TaskRepository? taskRepository,
-  })  : _aiService = aiService ?? AIService(),
+  })  : _aiRepository =   aiRepository ?? AiRepository(),
         _taskRepository = taskRepository ?? TaskRepository();
 
   String _prompt = '';
@@ -47,7 +47,7 @@ class AiViewModel extends ChangeNotifier {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
-      _generatedTasks = await _aiService.generateTaskPlan(_prompt);
+      _generatedTasks = await _aiRepository.generateTaskPlan(_prompt);
       _isLoading = false;
       notifyListeners();
     } catch (e) {

@@ -104,7 +104,7 @@ class LoginScreenView extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Sign in with social',
+                          'Sign in with social account',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.grey,
                           ),
