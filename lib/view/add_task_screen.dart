@@ -38,7 +38,8 @@ class AddTaskScreen extends StatelessWidget {
           title: Text(
             'Add Task',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Theme.of(context).appBarTheme.foregroundColor,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
           centerTitle: true,

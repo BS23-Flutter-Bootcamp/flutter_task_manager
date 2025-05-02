@@ -66,7 +66,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           title: Text(
             'Edit Task',
             style: theme.textTheme.titleLarge?.copyWith(
-              color: theme.appBarTheme.foregroundColor,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
           centerTitle: true,

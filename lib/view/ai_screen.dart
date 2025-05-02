@@ -38,7 +38,11 @@ class AiScreen extends StatelessWidget {
               context.go(RouteNames.taskListScreen);
             },
           ),
-          title: const Text('Generate Task Plan'),
+          title: const Text('Generate Task Plan',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              )),
           backgroundColor: AppConstants.textColorDark,
         ),
         body: Consumer<AiViewModel>(
