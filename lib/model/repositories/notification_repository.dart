@@ -12,7 +12,6 @@ class NotificationRepository {
   NotificationRepository([NotificationService? notificationService])
     : _notificationService = notificationService ?? NotificationService();
 
-  /// Show an immediate notification
   Future<void> showNotification({
     required int id,
     required String title,
@@ -27,7 +26,6 @@ class NotificationRepository {
     );
   }
 
-  /// Schedule a notification for a specific time
   Future<void> scheduleNotification({
     required int id,
     required String title,
@@ -48,7 +46,6 @@ class NotificationRepository {
     );
   }
 
-  //Schedule test notification
   Future<void> scheduleImmediateNotification({
     required int id,
     required String title,
@@ -61,7 +58,6 @@ class NotificationRepository {
     );
   }
 
-  /// Schedule a periodic notification
   Future<void> scheduleTaskNotifications(TaskEntity task) async {
     if (task.dueDate == null || task.isCompleted) {
       return;
@@ -103,17 +99,14 @@ class NotificationRepository {
     }
   }
 
-  /// Cancel a specific notification
   Future<void> cancelNotification(int id) async {
     await _notificationService.cancelNotification(id);
   }
 
-  /// Cancel all notifications
   Future<void> cancelAllNotifications() async {
     await _notificationService.cancelAllNotifications();
   }
 
-  /// Initialize the notification service
   Future<void> initNotification() async {
     await _notificationService.init();
   }
