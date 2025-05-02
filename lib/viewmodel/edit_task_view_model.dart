@@ -11,7 +11,9 @@ class EditTaskViewModel extends ChangeNotifier {
   DateTime? _dueDate;
   String? _errorMessage;
   final TaskEntity? _task;
-  bool _isLoading = false;
+  bool _isUpdating = false;
+  bool _isDeleting = false;
+
 
   EditTaskViewModel({TaskRepository? repository, TaskEntity? task})
     : _repository = repository ?? TaskRepository(),
@@ -28,7 +30,8 @@ class EditTaskViewModel extends ChangeNotifier {
   String get title => _title;
   String? get description => _description;
   DateTime? get dueDate => _dueDate;
-  bool get isLoading => _isLoading;
+  bool get isUpdating => _isUpdating;
+  bool get isDeleting => _isDeleting;
 
   void setTitle(String value) {
     _title = value;
@@ -47,7 +50,7 @@ class EditTaskViewModel extends ChangeNotifier {
 
   Future<bool> updateTask() async {
     try {
-      _isLoading = true;
+      _isUpdating = true;
       _errorMessage = null;
       notifyListeners();
 
@@ -66,7 +69,7 @@ class EditTaskViewModel extends ChangeNotifier {
         email: email,
       );
       await _repository.updateTask(updatedTask);
-      _isLoading = false;
+      _isUpdating = false;
       notifyListeners();
       return true;
     } catch (e) {
@@ -76,7 +79,7 @@ class EditTaskViewModel extends ChangeNotifier {
           isOffline
               ? 'Task updated locally. Sync when online.'
               : 'Failed to update task: $e';
-      _isLoading = false;
+      _isUpdating = false;
       notifyListeners();
       return false;
     }
@@ -84,13 +87,13 @@ class EditTaskViewModel extends ChangeNotifier {
 
   Future<bool> deleteTask() async {
     try {
-      _isLoading = true;
+      _isDeleting = true;
       _errorMessage = null;
       notifyListeners();
 
       if (_task == null) throw Exception('No task to delete');
       await _repository.deleteTask(_task.id!);
-      _isLoading = false;
+      _isDeleting = false;
       notifyListeners();
       return true;
     } catch (e) {
@@ -100,7 +103,7 @@ class EditTaskViewModel extends ChangeNotifier {
           isOffline
               ? 'Task deleted locally. Sync when online.'
               : 'Failed to delete task: $e';
-      _isLoading = false;
+      _isDeleting = false;
       notifyListeners();
       return false;
     }
