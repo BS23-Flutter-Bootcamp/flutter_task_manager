@@ -23,8 +23,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkAuthStatus() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    if (!mounted) return;
-
     try {
       final isRemembered = await _loginService.isRememberMeEnabled();
       final currentUser = _loginService.currentUser;
