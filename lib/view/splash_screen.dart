@@ -17,7 +17,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkAuthStatus());
+
   }
 
   Future<void> _checkAuthStatus() async {
@@ -28,13 +29,13 @@ class _SplashScreenState extends State<SplashScreen> {
       final currentUser = _loginService.currentUser;
 
       if (!mounted) return;
-      if (currentUser == null) {
-        context.go(RouteNames.loginScreen);
-      } else if (isRemembered) {
-        context.go(RouteNames.taskListScreen);
-      } else {
-        context.go(RouteNames.signUpScreen);
-      }
+      context.go(
+        currentUser == null
+            ? RouteNames.loginScreen
+            : (isRemembered
+                ? RouteNames.taskListScreen
+                : RouteNames.signUpScreen),
+      );
     } catch (e) {
       if (mounted) {
         context.go(RouteNames.signUpScreen);
