@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/add_task_screen.dart';
@@ -20,13 +19,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: RouteNames.taskListScreen,
-      builder: (context, state) => const TaskListScreen(),
-      redirect: (context, state) {
-        if (FirebaseAuth.instance.currentUser == null) {
-          return RouteNames.loginScreen;
-        }
-        return null;
-      },
+      builder: (context, state) => const TaskListScreen()
     ),
     GoRoute(
       path: RouteNames.addTaskScreen,
@@ -42,11 +35,11 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: RouteNames.signUpScreen,
-      builder: (context, state) => SignUpScreenView(), // Added Sign Up route
+      builder: (context, state) => SignUpScreenView(), 
     ),
     GoRoute(
       path: RouteNames.loginScreen,
-      builder: (context, state) => LoginScreenView(), // Added Sign Up route
+      builder: (context, state) => LoginScreenView(), 
     ),
      GoRoute(
       path: RouteNames.generateTaskPlan,

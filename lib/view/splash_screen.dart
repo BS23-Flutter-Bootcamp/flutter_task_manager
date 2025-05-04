@@ -29,7 +29,11 @@ class _SplashScreenState extends State<SplashScreen> {
       final isRemembered = await _loginService.isRememberMeEnabled();
       final currentUser = _loginService.currentUser;
 
-      if (currentUser != null && isRemembered) {
+      if (currentUser == null) {
+        if (mounted) {
+          context.go(RouteNames.loginScreen);
+        }
+      } else if (isRemembered) {
         if (mounted) {
           context.go(RouteNames.taskListScreen);
         }

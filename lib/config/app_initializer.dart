@@ -13,9 +13,9 @@ class AppInitializer {
       );
       await NotificationService().init();
 
-      LoginService()
-        ..init()
-        ..checkRememberMeStatus();
+      final loginService = LoginService();
+      await loginService.init();
+      await loginService.checkRememberMeStatus();
     } catch (e) {
       rethrow;
     }
