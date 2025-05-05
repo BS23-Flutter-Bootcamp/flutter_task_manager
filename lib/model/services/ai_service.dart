@@ -5,13 +5,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AIService {
-  final GenerativeModel _model;
 
   AIService()
     : _model = GenerativeModel(
         model: 'gemini-1.5-flash',
         apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
       );
+  
+  final GenerativeModel _model;
 
   Future<List<TaskEntity>> generateTaskPlan(String userPrompt) async {
     try {

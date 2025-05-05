@@ -4,10 +4,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseService {
-  static Database? _database;
-
   factory DatabaseService() => _instance;
+
   static final DatabaseService _instance = DatabaseService._internal();
+  static Database? _database;
   DatabaseService._internal();
 
   Future<Database> get database async {

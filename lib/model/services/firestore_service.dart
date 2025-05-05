@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 
 class FirestoreService {
+  
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> upsertTask(TaskEntity task, String email) async {
