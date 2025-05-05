@@ -20,7 +20,7 @@ class LoginViewModel extends ChangeNotifier {
 
   void setEmail(String value) {
     _email = value.trim();
-    _clearGeneralError();
+    _clearMessage();
     notifyListeners();
   }
 
@@ -31,7 +31,7 @@ class LoginViewModel extends ChangeNotifier {
 
   void setPassword(String value) {
     _password = value;
-    _clearGeneralError();
+    _clearMessage();
     notifyListeners();
   }
 
@@ -50,7 +50,7 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _clearGeneralError() {
+  void _clearMessage() {
     _message = null;
   }
 
