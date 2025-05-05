@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/repositories/login_repository.dart';
 
 class LoginViewModel extends ChangeNotifier {
+  
   final LoginRepository _repository = LoginRepository();
 
   String _email = '';

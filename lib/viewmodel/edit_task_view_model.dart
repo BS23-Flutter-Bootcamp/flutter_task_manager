@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class EditTaskViewModel extends ChangeNotifier {
+  
   EditTaskViewModel({TaskRepository? repository, TaskEntity? task})
     : _repository = repository ?? TaskRepository(),
       _task = task {
