@@ -1,14 +1,14 @@
 import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
-import 'package:flutter_task_manager/view/add_task_screen.dart';
-import 'package:flutter_task_manager/view/ai_screen.dart';
-import 'package:flutter_task_manager/view/details_page_screen.dart';
-import 'package:flutter_task_manager/view/edit_task_screen.dart';
-import 'package:flutter_task_manager/view/login_screen_view.dart';
-import 'package:flutter_task_manager/view/sign_up_screen_view.dart';
+import 'package:flutter_task_manager/view/add_task_view.dart';
+import 'package:flutter_task_manager/view/ai_view.dart';
+import 'package:flutter_task_manager/view/details_page_view.dart';
+import 'package:flutter_task_manager/view/edit_task_view.dart';
+import 'package:flutter_task_manager/view/login_view.dart';
+import 'package:flutter_task_manager/view/sign_up_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_task_manager/view/task_list_screen.dart';
-import '../view/splash_screen.dart';
+import 'package:flutter_task_manager/view/task_list_view.dart';
+import '../view/splash_screen_view.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
@@ -39,7 +39,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: RouteNames.loginScreen,
-      builder: (context, state) => const LoginScreenView(), 
+      builder: (context, state) => const LoginView(), 
     ),
      GoRoute(
       path: RouteNames.generateTaskPlan,

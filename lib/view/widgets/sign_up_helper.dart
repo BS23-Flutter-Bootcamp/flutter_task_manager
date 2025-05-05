@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/toast_snackbar.dart';
-import 'package:flutter_task_manager/viewmodel/sign_up_screen_view_model.dart';
+import 'package:flutter_task_manager/viewmodel/sign_up_view_model.dart';
 import 'package:go_router/go_router.dart';
 
 class SignUpHelper {

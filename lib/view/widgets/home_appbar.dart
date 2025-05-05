@@ -2,7 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/toast_snackbar.dart';
-import 'package:flutter_task_manager/viewmodel/login_screen_view_model.dart';
+import 'package:flutter_task_manager/viewmodel/login_view_model.dart';
 import 'package:flutter_task_manager/viewmodel/task_list_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

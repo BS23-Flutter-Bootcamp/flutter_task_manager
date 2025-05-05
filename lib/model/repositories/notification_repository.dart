@@ -5,11 +5,8 @@ import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import '../services/notification_service.dart';
 
 class NotificationRepository {
-  NotificationRepository([NotificationService? notificationService])
-    : _notificationService = notificationService ?? NotificationService();
 
-  final NotificationService _notificationService;
-
+  final NotificationService _notificationService = NotificationService();
 
   Future<void> showNotification({
     required int id,
@@ -101,4 +98,5 @@ class NotificationRepository {
   Future<void> initNotification() async {
     await _notificationService.init();
   }
+
 }

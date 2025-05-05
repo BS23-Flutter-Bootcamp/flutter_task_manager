@@ -3,33 +3,23 @@ import 'package:flutter_task_manager/model/repositories/login_repository.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final LoginRepository _repository = LoginRepository();
+
   String _email = '';
   String _password = '';
-  String? _emailError;
-  String? _passwordError;
-  String? _errorMessage;
+  String? _message;
   bool _isLoading = false;
   bool _isRememberMeChecked = false;
   bool _showPassword = false;
 
-  String? get emailError => _emailError;
-  String? get passwordError => _passwordError;
-  String? get errorMessage => _errorMessage;
+  String? get message => _message;
   bool get isLoading => _isLoading;
   bool get isRememberMeChecked => _isRememberMeChecked;
   bool get showPassword => _showPassword;
   String get email => _email;
   String get password => _password;
 
-  bool get isFormValid =>
-      _email.isNotEmpty &&
-      _password.isNotEmpty &&
-      _emailError == null &&
-      _passwordError == null;
-
   void setEmail(String value) {
     _email = value.trim();
-    _validateEmail();
     _clearGeneralError();
     notifyListeners();
   }
@@ -41,7 +31,6 @@ class LoginViewModel extends ChangeNotifier {
 
   void setPassword(String value) {
     _password = value;
-    _validatePassword();
     _clearGeneralError();
     notifyListeners();
   }
@@ -56,36 +45,16 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setErrorMessage(String? message) {
-    _errorMessage = message;
+  void setMessage(String? message) {
+    _message = message;
     notifyListeners();
   }
 
-  void _validateEmail() {
-    if (_email.isEmpty) {
-      _emailError = 'Email is required';
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_email)) {
-      _emailError = 'Enter a valid email';
-    } else {
-      _emailError = null;
-    }
-  }
-
-  void _validatePassword() {
-    if (_password.isEmpty) {
-      _passwordError = 'Password is required';
-    } else {
-      _passwordError = null;
-    }
-  }
-
   void _clearGeneralError() {
-    _errorMessage = null;
+    _message = null;
   }
 
   Future<bool> login() async {
-    if (!isFormValid) return false;
-
     _isLoading = true;
     notifyListeners();
 
@@ -99,7 +68,7 @@ class LoginViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = _mapFirebaseErrorToMessage(e.toString());
+      _message = _mapFirebaseErrorToMessage(e.toString());
       _isLoading = false;
       notifyListeners();
       return false;
@@ -114,7 +83,7 @@ class LoginViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Failed to log out. Please try again';
+      _message = 'Failed to log out. Please try again';
       _isLoading = false;
       notifyListeners();
     }
@@ -125,8 +94,6 @@ class LoginViewModel extends ChangeNotifier {
       return 'No account found with this email';
     } else if (error.contains('wrong-password')) {
       return 'Incorrect password';
-    } else if (error.contains('invalid-email')) {
-      return 'Invalid email format';
     } else if (error.contains('user-disabled')) {
       return 'This account has been disabled';
     } else if (error.contains('too-many-requests')) {
@@ -134,7 +101,7 @@ class LoginViewModel extends ChangeNotifier {
     } else if (error.contains('network-request-failed')) {
       return 'Network error. Please check your connection';
     } else {
-      return 'Failed to log in. Please try again';
+      return 'Failed to log in. Password or email is incorrect';
     }
   }
 }

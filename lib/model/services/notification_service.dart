@@ -5,13 +5,15 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  static final NotificationService _notificationService =
-      NotificationService._internal();
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   factory NotificationService() {
     return _notificationService;
   }
+
+  static final NotificationService _notificationService =
+      NotificationService._internal();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 
   NotificationService._internal();
 
@@ -35,10 +37,21 @@ class NotificationService {
     android: _androidNotificationDetails,
   );
 
+  Future<void> init() async {
+    final AndroidInitializationSettings androidInitializationSettings =
+        AndroidInitializationSettings("mipmap/ic_launcher");
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: androidInitializationSettings);
+
+    await _requestPermissions();
+    tz.initializeTimeZones();
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
   Future<void> _requestPermissions() async {
     try {
       final notificationStatus = await Permission.notification.request();
-      debugPrint('Notification permission status: $notificationStatus');
 
       if (!notificationStatus.isGranted) {
         debugPrint('Notification permission denied');
@@ -47,19 +60,17 @@ class NotificationService {
       }
 
       final alarmStatus = await Permission.scheduleExactAlarm.request();
-      debugPrint('Exact alarm permission status: $alarmStatus');
 
       if (!alarmStatus.isGranted) {
         _showPermissionDialog('Exact Alarm');
       }
     } catch (e) {
-      debugPrint('Error requesting permissions: $e');
+      throw Exception('Error requesting permissions: $e');
     }
   }
 
   Future<void> _showPermissionDialog(String permissionType) async {
     if (navigatorKey.currentContext == null) {
-      debugPrint('No context available for dialog');
       return;
     }
 
@@ -115,18 +126,6 @@ class NotificationService {
     return notificationStatus.isGranted && alarmStatus.isGranted;
   }
 
-  Future<void> init() async {
-    final AndroidInitializationSettings androidInitializationSettings =
-        AndroidInitializationSettings("mipmap/ic_launcher");
-
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: androidInitializationSettings);
-
-    await _requestPermissions();
-    tz.initializeTimeZones();
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
   Future<void> showNotification({
     required int id,
     required String? title,
@@ -166,12 +165,8 @@ class NotificationService {
   }
 
   Future<bool> canScheduleExactAlarms() async {
-    try {
       final status = await Permission.scheduleExactAlarm.status;
       return status.isGranted;
-    } catch (e) {
-      return false;
-    }
   }
 
   Future<void> cancelNotification(int id) async {

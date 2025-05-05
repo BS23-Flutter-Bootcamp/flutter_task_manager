@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
-import 'package:flutter_task_manager/view/widgets/sign_in_helper.dart';
-import 'package:flutter_task_manager/viewmodel/login_screen_view_model.dart';
+import 'package:flutter_task_manager/view/widgets/sign_up_helper.dart';
+import 'package:flutter_task_manager/viewmodel/sign_up_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreenView extends StatelessWidget {
-  const LoginScreenView({super.key});
+class SignUpScreenView extends StatelessWidget {
+  const SignUpScreenView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
+      create: (_) => SignUpViewModel(),
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-        body: Consumer<LoginViewModel>(
+        body: Consumer<SignUpViewModel>(
           builder: (context, viewModel, child) {
             return Center(
               child: SingleChildScrollView(
@@ -27,7 +27,6 @@ class LoginScreenView extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
@@ -41,7 +40,7 @@ class LoginScreenView extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Login',
+                          'Sign Up',
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -64,22 +63,8 @@ class LoginScreenView extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         TextField(
-                          obscureText: !viewModel.showPassword,
-                          obscuringCharacter: '*',
                           onChanged: viewModel.setPassword,
                           decoration: InputDecoration(
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                viewModel.showPassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                viewModel.togglePasswordVisibility(
-                                  !viewModel.showPassword,
-                                );
-                              },
-                            ),
                             labelText: 'Password',
                             labelStyle: TextStyle(color: theme.hintColor),
                             border: OutlineInputBorder(
@@ -89,22 +74,26 @@ class LoginScreenView extends StatelessWidget {
                             fillColor: Colors.grey[100],
                             errorText: viewModel.passwordError,
                           ),
+                          obscureText: true,
                         ),
                         const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: viewModel.isRememberMeChecked,
-                              onChanged: (value) {
-                                viewModel.setRememberMe(value!);
-                              },
+                        TextField(
+                          onChanged: viewModel.setRepeatPassword,
+                          decoration: InputDecoration(
+                            labelText: 'Repeat Password',
+                            labelStyle: TextStyle(color: theme.hintColor),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            const Text('Remember me'),
-                          ],
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            errorText: viewModel.repeatPasswordError,
+                          ),
+                          obscureText: true,
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Sign in with social account',
+                          'Sign up with social account',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.grey,
                           ),
@@ -122,7 +111,7 @@ class LoginScreenView extends StatelessWidget {
                               onPressed:
                                   viewModel.isLoading
                                       ? null
-                                      : () => SignInHelper.handleGoogleSignIn(
+                                      : () => SignUpHelper.handleGoogleSignIn(
                                         context,
                                       ),
                             ),
@@ -135,7 +124,7 @@ class LoginScreenView extends StatelessWidget {
                               onPressed:
                                   viewModel.isLoading
                                       ? null
-                                      : () => SignInHelper.handleFacebookSignIn(
+                                      : () => SignUpHelper.handleFacebookSignIn(
                                         context,
                                       ),
                             ),
@@ -148,7 +137,7 @@ class LoginScreenView extends StatelessWidget {
                               onPressed:
                                   viewModel.isLoading
                                       ? null
-                                      : () => SignInHelper.handleAppleSignIn(
+                                      : () => SignUpHelper.handleAppleSignIn(
                                         context,
                                       ),
                             ),
@@ -159,7 +148,7 @@ class LoginScreenView extends StatelessWidget {
                           onPressed:
                               viewModel.isFormValid && !viewModel.isLoading
                                   ? () {
-                                    SignInHelper.handleLogin(
+                                    SignUpHelper.handleSignUp(
                                       context: context,
                                       viewModel: viewModel,
                                     );
@@ -189,7 +178,7 @@ class LoginScreenView extends StatelessWidget {
                                     ),
                                   )
                                   : Text(
-                                    'LOGIN',
+                                    'SIGN UP',
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       fontSize: 16,
                                       color: Colors.white,
@@ -209,19 +198,19 @@ class LoginScreenView extends StatelessWidget {
                           onTap:
                               viewModel.isLoading
                                   ? null
-                                  : () => context.go(RouteNames.signUpScreen),
+                                  : () => context.go(RouteNames.loginScreen),
                           child: Text.rich(
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: 'Don\'t have an account? ',
+                                  text: 'Already have an account? ',
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),
                                 ),
                                 TextSpan(
-                                  text: 'Sign up',
+                                  text: 'Login',
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.blue,
