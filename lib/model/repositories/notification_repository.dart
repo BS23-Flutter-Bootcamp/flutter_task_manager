@@ -5,12 +5,11 @@ import 'package:flutter_task_manager/model/entities/task_entity.dart';
 import '../services/notification_service.dart';
 
 class NotificationRepository {
-  final NotificationService _notificationService;
-  final FlutterLocalNotificationsPlugin notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
   NotificationRepository([NotificationService? notificationService])
     : _notificationService = notificationService ?? NotificationService();
+
+  final NotificationService _notificationService;
+
 
   Future<void> showNotification({
     required int id,
@@ -86,14 +85,6 @@ class NotificationRepository {
           dateTimeComponents: canUseExact ? null : DateTimeComponents.time,
         );
       }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> cancelTaskNotifications(int taskId) async {
-    try {
-      await notificationsPlugin.cancel(taskId);
     } catch (e) {
       rethrow;
     }

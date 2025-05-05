@@ -87,7 +87,7 @@ class TaskRepository {
               task.lastSyncTime ?? DateTime(1970),
             )) {
           await _databaseService.deleteTask(task.id!);
-          await _notificationRepository.cancelTaskNotifications(task.id!);
+          await _notificationRepository.cancelNotification(task.id!);
           return;
         }
       }
@@ -95,7 +95,7 @@ class TaskRepository {
         lastSyncTime: DateTime.now(),
         email: _currentUserEmail!,
       );
-      await _notificationRepository.cancelTaskNotifications(task.id!);
+      await _notificationRepository.cancelNotification(task.id!);
       await _notificationRepository.scheduleImmediateNotification(
         id: task.id!,
         title: '✅ Task Updated!',
@@ -122,7 +122,7 @@ class TaskRepository {
           lastSyncTime: DateTime.now(),
         );
         await _databaseService.updateTask(updatedTask);
-        await _notificationRepository.cancelTaskNotifications(id);
+        await _notificationRepository.cancelNotification(id);
         if (await _isOnline()) {
           await _firestoreService.upsertTask(updatedTask, _currentUserEmail!);
           await syncTasks();
@@ -188,7 +188,7 @@ class TaskRepository {
         )) {
           if (remoteTask.isDeleted) {
             await _databaseService.deleteTask(remoteTask.id!);
-            await _notificationRepository.cancelTaskNotifications(
+            await _notificationRepository.cancelNotification(
               remoteTask.id!,
             );
           } else {
@@ -204,7 +204,7 @@ class TaskRepository {
               }
             } else {
               await _databaseService.updateTask(remoteTask);
-              await _notificationRepository.cancelTaskNotifications(
+              await _notificationRepository.cancelNotification(
                 remoteTask.id!,
               );
               if (!remoteTask.isCompleted) {
