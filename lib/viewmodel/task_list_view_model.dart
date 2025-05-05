@@ -13,8 +13,8 @@ class TaskListViewModel extends ChangeNotifier {
       _dueDate = task.dueDate;
     }
   }
-  final TaskRepository _repository;
 
+  final TaskRepository _repository;
   List<TaskEntity> _tasks = [];
   String? _errorMessage;
   bool _isLoading = false;
@@ -29,8 +29,12 @@ class TaskListViewModel extends ChangeNotifier {
   String? get description => _description;
   DateTime? get dueDate => _dueDate;
   bool get isLoading => _isLoading;
-
   List<TaskEntity> get tasks => _tasks;
+
+  Future<bool> isOffline() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult.contains(ConnectivityResult.none);
+  }
 
   Future<void> fetchTasks({bool sync = false}) async {
     try {
@@ -73,7 +77,7 @@ class TaskListViewModel extends ChangeNotifier {
       _tasks = await _repository.getTasks();
       notifyListeners();
     } catch (e) {
-      _errorMessage = 'Failed to update task: $e';
+      _errorMessage = 'Failed to update task';
       notifyListeners();
     }
   }
@@ -90,12 +94,10 @@ class TaskListViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final connectivityResult = await Connectivity().checkConnectivity();
-      final isOffline = connectivityResult.contains(ConnectivityResult.none);
       _errorMessage =
-          isOffline
+          await isOffline()
               ? 'Task deleted locally. Sync when online.'
-              : 'Failed to delete task: $e';
+              : 'Failed to delete task';
       _isLoading = false;
       notifyListeners();
       return false;

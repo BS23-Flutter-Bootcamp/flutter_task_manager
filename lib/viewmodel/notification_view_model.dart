@@ -19,9 +19,8 @@ class NotificationViewModel extends ChangeNotifier {
         id: 1,
       );
       notifyListeners();
-      debugPrint('Notification shown successfully');
     } catch (e) {
-      debugPrint('Error showing notification: $e');
+      debugPrint('Error showing notification:');
     }
   }
 }

@@ -72,7 +72,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             if (viewModel.task == null) {
               return const Center(child: Text('No task to edit'));
             }
-            // Sync controller text with ViewModel state
             if (_titleController.text != viewModel.title) {
               _titleController.text = viewModel.title;
             }

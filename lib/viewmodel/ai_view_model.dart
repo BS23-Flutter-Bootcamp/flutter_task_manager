@@ -4,9 +4,6 @@ import 'package:flutter_task_manager/model/repositories/ai_repository.dart';
 import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 
 class AiViewModel extends ChangeNotifier {
-  final AiRepository _aiRepository;
-  final TaskRepository _taskRepository;
-
   AiViewModel({AiRepository? aiRepository, TaskRepository? taskRepository})
     : _aiRepository = aiRepository ?? AiRepository(),
       _taskRepository = taskRepository ?? TaskRepository();
@@ -16,6 +13,8 @@ class AiViewModel extends ChangeNotifier {
   bool _isGenerating = false;
   bool _isSaving = false;
   String? _errorMessage;
+  final AiRepository _aiRepository;
+  final TaskRepository _taskRepository;
 
   String get prompt => _prompt;
   List<TaskEntity> get generatedTasks => _generatedTasks;
@@ -52,7 +51,7 @@ class AiViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _isGenerating = false;
-      _errorMessage = 'Failed to generate tasks: $e';
+      _errorMessage = 'Failed to generate tasks';
       notifyListeners();
     }
   }
@@ -68,18 +67,14 @@ class AiViewModel extends ChangeNotifier {
       _isSaving = true;
       _errorMessage = null;
       notifyListeners();
-
-      final taskIds = await _taskRepository.addTasksFromAI(_generatedTasks);
-      if (kDebugMode) {
-        print('Saved tasks with IDs: $taskIds');
-      }
+      await _taskRepository.addTasksFromAI(_generatedTasks);
       _generatedTasks = [];
       _prompt = '';
       _isSaving = false;
       notifyListeners();
     } catch (e) {
       _isSaving = false;
-      _errorMessage = 'Failed to save tasks: $e';
+      _errorMessage = 'Failed to save tasks';
       notifyListeners();
     }
   }

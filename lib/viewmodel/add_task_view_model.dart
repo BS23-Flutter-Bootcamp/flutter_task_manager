@@ -4,15 +4,15 @@ import 'package:flutter_task_manager/model/repositories/task_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AddTaskViewModel extends ChangeNotifier {
+  AddTaskViewModel({TaskRepository? repository})
+    : _repository = repository ?? TaskRepository();
+
   final TaskRepository _repository;
   String _title = '';
   String? _description;
   DateTime _dueDate = DateTime.now();
   String? _errorMessage;
   bool _isLoading = false;
-
-  AddTaskViewModel({TaskRepository? repository})
-    : _repository = repository ?? TaskRepository();
 
   String? get errorMessage => _errorMessage;
   String get title => _title;
@@ -55,7 +55,7 @@ class AddTaskViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = 'Failed to add task: $e';
+      _errorMessage = 'Failed to add task';
       _isLoading = false;
       notifyListeners();
       return false;

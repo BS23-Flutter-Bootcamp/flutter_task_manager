@@ -37,6 +37,11 @@ class EditTaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> isOffline() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult.contains(ConnectivityResult.none);
+  }
+
   void setDescription(String? value) {
     _description = value;
     notifyListeners();
@@ -72,12 +77,10 @@ class EditTaskViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final connectivityResult = await Connectivity().checkConnectivity();
-      final isOffline = connectivityResult.contains(ConnectivityResult.none);
       _errorMessage =
-          isOffline
+          await isOffline()
               ? 'Task updated locally. Sync when online.'
-              : 'Failed to update task: $e';
+              : 'Failed to update task';
       _isUpdating = false;
       notifyListeners();
       return false;
@@ -96,12 +99,10 @@ class EditTaskViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      final connectivityResult = await Connectivity().checkConnectivity();
-      final isOffline = connectivityResult.contains(ConnectivityResult.none);
       _errorMessage =
-          isOffline
+          await isOffline()
               ? 'Task deleted locally. Sync when online.'
-              : 'Failed to delete task: $e';
+              : 'Failed to delete task';
       _isDeleting = false;
       notifyListeners();
       return false;
