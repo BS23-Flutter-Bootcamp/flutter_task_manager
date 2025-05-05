@@ -15,6 +15,7 @@ class AppConstants {
   static const String keyDueDate = 'dueDate';
   static const String keyIsCompleted = 'isCompleted';
   static const String keyIsDeleted = 'isDeleted';
+   static const String rememberMeKey = 'remember_me';
 
   // Database constants
   static const String databaseName = 'task_manager.db';
