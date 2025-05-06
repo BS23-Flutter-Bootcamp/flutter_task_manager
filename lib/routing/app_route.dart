@@ -35,7 +35,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: RouteNames.signUpScreen,
-      builder: (context, state) => const SignUpScreenView(), 
+      builder: (context, state) => const SignUpView(), 
     ),
     GoRoute(
       path: RouteNames.loginScreen,

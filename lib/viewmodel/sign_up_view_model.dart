@@ -2,7 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/repositories/sign_up_repository.dart';
 
 class SignUpViewModel extends ChangeNotifier {
-  final SignUpRepository _repository = SignUpRepository();
+
+    SignUpViewModel({required SignUpRepository signUpRepository})
+    : _signUpRepository = signUpRepository;
+
+  final SignUpRepository _signUpRepository;
+ 
+
+
   String _email = '';
   String _password = '';
   String _repeatPassword = '';
@@ -89,7 +96,7 @@ class SignUpViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repository.signUp(_email, _password);
+      await _signUpRepository.signUp(_email, _password);
       _isLoading = false;
       notifyListeners();
       return true;

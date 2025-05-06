@@ -4,7 +4,7 @@ import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/form_header.dart';
 import 'package:flutter_task_manager/view/widgets/loading_indicator.dart';
 import 'package:flutter_task_manager/view/widgets/login_text_fields.dart';
-import 'package:flutter_task_manager/view/widgets/sign_up_link.dart';
+import 'package:flutter_task_manager/view/widgets/login_sign_up_link.dart';
 import 'package:flutter_task_manager/view/widgets/social_icons.dart';
 import 'package:flutter_task_manager/view/widgets/toast_snackbar.dart';
 import 'package:flutter_task_manager/viewmodel/login_view_model.dart';
@@ -120,7 +120,7 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ),
                         const SizedBox(height: 16),
-                        SignUpLink(isLoading: viewModel.isLoading),
+                          LoginSignUpLink(isLoading: viewModel.isLoading,routeName: RouteNames.signUpScreen,),
                       ],
                     ),
                   ),
