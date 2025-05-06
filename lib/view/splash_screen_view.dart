@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
-import 'package:flutter_task_manager/model/services/login_service.dart';
+import 'package:flutter_task_manager/viewmodel/login_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,8 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final LoginService _loginService = LoginService();
-
   @override
   void initState() {
     super.initState();
@@ -21,25 +20,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuthStatus() async {
+    final loginViewModel = context.read<LoginViewModel>();
     await Future.delayed(const Duration(seconds: 2));
+    await loginViewModel.checkUserValidity();
 
-    try {
-      final isRemembered = await _loginService.isRememberMeEnabled();
-      final currentUser = _loginService.currentUser;
+    if (!mounted) return;
 
-      if (!mounted) return;
-      context.go(
-        currentUser == null
-            ? RouteNames.loginScreen
-            : (isRemembered
-                ? RouteNames.taskListScreen
-                : RouteNames.signUpScreen),
-      );
-    } catch (e) {
-      if (mounted) {
-        context.go(RouteNames.signUpScreen);
-      }
-    }
+    context.go(
+      loginViewModel.isValidUser
+          ? RouteNames.taskListScreen
+          : RouteNames.loginScreen,
+    );
   }
 
   @override

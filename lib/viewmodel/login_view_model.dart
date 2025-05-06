@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/repositories/login_repository.dart';
 
 class LoginViewModel extends ChangeNotifier {
-  LoginViewModel({required LoginRepository loginRepository}): _loginRepository = loginRepository;
-  
+  LoginViewModel({required LoginRepository loginRepository})
+    : _loginRepository = loginRepository;
+
   final LoginRepository _loginRepository;
 
   String _email = '';
@@ -12,13 +13,24 @@ class LoginViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool _isRememberMeChecked = false;
   bool _showPassword = false;
+  bool _isValidUser = false;
 
+  bool get isValidUser => _isValidUser;
   String? get message => _message;
   bool get isLoading => _isLoading;
   bool get isRememberMeChecked => _isRememberMeChecked;
   bool get showPassword => _showPassword;
   String get email => _email;
   String get password => _password;
+
+  Future<void> checkUserValidity() async {
+  try {
+    _isValidUser = await _loginRepository.isValidUser();
+  } catch (_) {
+    _isValidUser = false;
+  }
+  notifyListeners();
+}
 
 
   void setEmail(String value) {

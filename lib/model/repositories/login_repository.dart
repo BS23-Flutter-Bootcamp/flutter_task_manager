@@ -1,9 +1,10 @@
 import 'package:flutter_task_manager/model/services/login_service.dart';
 
 class LoginRepository {
-  LoginRepository({required LoginService loginService}) : _service = loginService;
+  LoginRepository({required LoginService loginService})
+    : _loginService = loginService;
 
-  final LoginService _service;
+  final LoginService _loginService;
 
   Future<void> login({
     required String email,
@@ -11,7 +12,7 @@ class LoginRepository {
     required bool rememberMe,
   }) async {
     try {
-      await _service.signIn(
+      await _loginService.signIn(
         email: email,
         password: password,
         rememberMe: rememberMe,
@@ -23,9 +24,19 @@ class LoginRepository {
 
   Future<void> logout() async {
     try {
-      await _service.logOut();
+      await _loginService.logOut();
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<bool> isValidUser() async {
+    try {
+      final rememberMe = await _loginService.isRememberMeEnabled();
+      final user = _loginService.currentUser;
+      return user != null && rememberMe;
+    } catch (e) {
+      return false;
     }
   }
 }
