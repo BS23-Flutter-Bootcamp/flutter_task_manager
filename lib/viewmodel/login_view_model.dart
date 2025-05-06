@@ -21,10 +21,6 @@ class LoginViewModel extends ChangeNotifier {
   String get email => _email;
   String get password => _password;
 
-  Future<void> initialize() async {
-  await _loginRepository.isRegistered();
-}
-
 
   void setEmail(String value) {
     _email = value.trim();

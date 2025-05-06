@@ -4,21 +4,12 @@ class LoginRepository {
   
   LoginRepository({required LoginService loginService}) : _service = loginService;
 
-   final LoginService _service;
-
-  Future<void> isRegistered() async {
-    try {
-      await _service.initializePref();
-      await _service.checkRememberMeStatus();
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
+  final LoginService _service;
 
   Future<void> login({
-    required email,
+    required String email,
     required String password,
-    required rememberMe,
+    required bool rememberMe,
   }) async {
     try {
       await _service.signIn(

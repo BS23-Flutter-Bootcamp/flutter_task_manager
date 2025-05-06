@@ -16,7 +16,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<LoginService>(create: (_) => LoginService()),
+        Provider<LoginService>(create: (context) => LoginService()),
         Provider<LoginRepository>(
           create:
               (context) =>
