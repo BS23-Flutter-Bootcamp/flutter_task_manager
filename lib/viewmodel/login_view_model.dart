@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_task_manager/model/repositories/login_repository.dart';
 
 class LoginViewModel extends ChangeNotifier {
-
   LoginViewModel({required LoginRepository loginRepository}): _loginRepository = loginRepository;
   
   final LoginRepository _loginRepository;

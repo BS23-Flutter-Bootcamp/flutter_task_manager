@@ -4,11 +4,10 @@ import 'package:flutter_task_manager/constants/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
-
-  LoginService(){
+  LoginService() {
     initializePref();
   }
-  
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   static SharedPreferences? _prefs;
 
@@ -16,7 +15,6 @@ class LoginService {
 
   Future<void> initializePref() async {
     if (_prefs != null) return;
-    _prefs = await SharedPreferences.getInstance();
     try {
       _prefs = await SharedPreferences.getInstance();
     } catch (e) {

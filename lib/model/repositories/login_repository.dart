@@ -1,7 +1,6 @@
 import 'package:flutter_task_manager/model/services/login_service.dart';
 
 class LoginRepository {
-  
   LoginRepository({required LoginService loginService}) : _service = loginService;
 
   final LoginService _service;
