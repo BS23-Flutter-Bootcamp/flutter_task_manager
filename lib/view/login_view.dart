@@ -27,7 +27,11 @@ class _LoginViewState extends State<LoginView> {
         bool authenticated = await viewModel.login();
         if (authenticated && mounted) {
           context.go(RouteNames.taskListScreen);
-          ToastSnackbar.show(context: context, message: AppConstants.sucessLogin, color: Colors.green);
+          ToastSnackbar.show(
+            context: context,
+            message: AppConstants.sucessLogin,
+            color: Colors.green,
+          );
         }
       } catch (e) {
         viewModel.setMessage(AppConstants.errorPssswordEmail);
@@ -76,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
                           ],
                         ),
                         const SizedBox(height: 20),
-      
+
                         SocialIcons(),
                         const SizedBox(height: 15),
                         ElevatedButton(
@@ -101,11 +105,10 @@ class _LoginViewState extends State<LoginView> {
                                   ? LoadingIndicator()
                                   : Text(
                                     'LOGIN',
-                                    style: theme.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                        ),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                         ),
                         const SizedBox(height: 16),
