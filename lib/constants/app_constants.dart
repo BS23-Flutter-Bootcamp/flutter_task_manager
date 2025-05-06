@@ -24,8 +24,13 @@ class AppConstants {
   static const String keyLastSyncTime = 'lastSyncTime';
   static const String keyEmail = 'email';
 
+  //Sucess message
+
+  static const String sucessLogin = 'Sucessfully logged in';
+
   // Error messages
   static const String errorTitleRequired = 'Please enter a title';
+  static const String errorPssswordEmail = 'Login failed. Password or email is incorrect.';
   static const String errorDateRequired = 'Please enter a due date';
   static const String errorTaskNotFound = 'No task to update or delete';
   static const String errorTaskAdd = 'Failed to add task. Please try again.';

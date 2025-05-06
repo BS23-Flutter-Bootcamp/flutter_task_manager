@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_task_manager/constants/app_constants.dart';
 import 'package:flutter_task_manager/routing/app_route_name.dart';
 import 'package:flutter_task_manager/view/widgets/form_header.dart';
 import 'package:flutter_task_manager/view/widgets/loading_indicator.dart';
 import 'package:flutter_task_manager/view/widgets/login_text_fields.dart';
 import 'package:flutter_task_manager/view/widgets/sign_up_link.dart';
 import 'package:flutter_task_manager/view/widgets/social_icons.dart';
+import 'package:flutter_task_manager/view/widgets/toast_snackbar.dart';
 import 'package:flutter_task_manager/viewmodel/login_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -25,10 +27,10 @@ class _LoginViewState extends State<LoginView> {
         bool authenticated = await viewModel.login();
         if (authenticated && mounted) {
           context.go(RouteNames.taskListScreen);
-          viewModel.setMessage('Sucessfully logged in.');
+          ToastSnackbar.show(context: context, message: AppConstants.sucessLogin, color: Colors.green);
         }
       } catch (e) {
-        viewModel.setMessage('Login failed. Password or email is incorrect.');
+        viewModel.setMessage(AppConstants.errorPssswordEmail);
       }
     }
   }
