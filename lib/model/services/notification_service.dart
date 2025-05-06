@@ -5,17 +5,15 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-
+  // Singleton instance
   factory NotificationService() {
     return _notificationService;
   }
 
-  static final NotificationService _notificationService =
-      NotificationService._internal();
+  // Private static instance
+  static final NotificationService _notificationService = NotificationService._internal();
+
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-
-  NotificationService._internal();
 
   static const channelId = "1";
 
@@ -26,8 +24,7 @@ class NotificationService {
       AndroidNotificationDetails(
         channelId,
         "thecodexhub",
-        channelDescription:
-            "This channel is responsible for all the local notifications",
+        channelDescription: "This channel is responsible for all the local notifications",
         playSound: true,
         priority: Priority.high,
         importance: Importance.high,
@@ -36,6 +33,11 @@ class NotificationService {
   final NotificationDetails notificationDetails = NotificationDetails(
     android: _androidNotificationDetails,
   );
+
+  
+  NotificationService._internal() {
+    init();
+  }
 
   Future<void> init() async {
     final AndroidInitializationSettings androidInitializationSettings =
@@ -76,24 +78,23 @@ class NotificationService {
 
     final result = await showDialog<bool>(
       context: navigatorKey.currentContext!,
-      builder:
-          (context) => AlertDialog(
-            title: Text('$permissionType Permission Required'),
-            content: Text(
-              'This app needs $permissionType permission to schedule notifications. '
-              'Please enable it in settings.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Open Settings'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('$permissionType Permission Required'),
+        content: Text(
+          'This app needs $permissionType permission to schedule notifications. '
+          'Please enable it in settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
     );
 
     if (result == true) {
@@ -165,8 +166,8 @@ class NotificationService {
   }
 
   Future<bool> canScheduleExactAlarms() async {
-      final status = await Permission.scheduleExactAlarm.status;
-      return status.isGranted;
+    final status = await Permission.scheduleExactAlarm.status;
+    return status.isGranted;
   }
 
   Future<void> cancelNotification(int id) async {

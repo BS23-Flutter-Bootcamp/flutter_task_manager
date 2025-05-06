@@ -2,11 +2,13 @@ import 'package:flutter_task_manager/model/services/login_service.dart';
 
 class LoginRepository {
   
-  final LoginService _service = LoginService();
+  LoginRepository({required LoginService loginService}) : _service = loginService;
+
+   final LoginService _service;
 
   Future<void> isRegistered() async {
     try {
-      await _service.init();
+      await _service.initializePref();
       await _service.checkRememberMeStatus();
     } catch (e) {
       throw Exception(e.toString());

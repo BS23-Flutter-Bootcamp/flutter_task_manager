@@ -4,14 +4,19 @@ import 'package:flutter_task_manager/constants/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
+
+  LoginService(){
+    initializePref();
+  }
   
   final FirebaseAuth _auth = FirebaseAuth.instance;
   static SharedPreferences? _prefs;
 
   User? get currentUser => _auth.currentUser;
 
-  Future<void> init() async {
+  Future<void> initializePref() async {
     if (_prefs != null) return;
+    _prefs = await SharedPreferences.getInstance();
     try {
       _prefs = await SharedPreferences.getInstance();
     } catch (e) {
@@ -32,7 +37,7 @@ class LoginService {
 
       if (userCredential.user != null) {
         try {
-          await init();
+          await initializePref();
           await _prefs?.setBool(AppConstants.rememberMeKey, rememberMe);
         } catch (e) {
           throw Exception('Failed to save remember me preference');
@@ -45,7 +50,7 @@ class LoginService {
 
   Future<bool> isRememberMeEnabled() async {
     try {
-      await init();
+      await initializePref();
       return _prefs?.getBool(AppConstants.rememberMeKey) ?? false;
     } catch (e) {
       return false;
